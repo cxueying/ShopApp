@@ -387,24 +387,35 @@ public class DatabaseManager {
     public boolean addGoodsToCart(int id, String username, int quantity) {
         try {
             Connection connection = DriverManager.getConnection(DB_URL);
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM GOODS WHERE ID = ?");
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM SHOPPINGCART WHERE ID = ?");
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
-            PreparedStatement statement2 = connection.prepareStatement("INSERT INTO SHOPPINGCART (USERACCOUNT, ID, GOODSNAME, PRICE, QUANTITY) VALUES (?, ?, ?, ?, ?)");
             if(resultSet.next()) {
-                statement2.setString(1, username);
-                statement2.setInt(2,id);
-                statement2.setString(3, resultSet.getString("NAME"));
-                statement2.setDouble(4, resultSet.getDouble("PRICE"));
-                statement2.setInt(5, quantity);
-                statement2.executeUpdate();
+                statement = connection.prepareStatement("UPDATE SHOPPINGCART SET QUANTITY = ? WHERE ID = ?");
+                statement.setInt(1, resultSet.getInt("QUANTITY") + quantity);
+                statement.setInt(2, id);
+                statement.executeUpdate();
                 connection.close();
                 return true;
             }else {
-                connection.close();
-                return false;
+                PreparedStatement statement2 = connection.prepareStatement("SELECT * FROM GOODS WHERE ID = ?");
+                statement2.setInt(1, id);
+                resultSet = statement2.executeQuery();
+                statement2 = connection.prepareStatement("INSERT INTO SHOPPINGCART (USERACCOUNT, ID, GOODSNAME, PRICE, QUANTITY) VALUES (?, ?, ?, ?, ?)");
+                if(resultSet.next()) {
+                    statement2.setString(1, username);
+                    statement2.setInt(2,id);
+                    statement2.setString(3, resultSet.getString("NAME"));
+                    statement2.setDouble(4, resultSet.getDouble("PRICE"));
+                    statement2.setInt(5, quantity);
+                    statement2.executeUpdate();
+                    connection.close();
+                    return true;
+                }else {
+                    connection.close();
+                    return false;
+                }
             }
-            
         } catch (SQLException e) {
             System.out.println("Failed to add goods to shopping cart: " + e.getMessage());
             return false;
@@ -426,7 +437,22 @@ public class DatabaseManager {
             connection.close();
             return true;
         } catch (SQLException e) {
-            System.out.println("Failed to show user shopping cart" + e.getMessage());
+            System.out.println("Failed to show user shopping cart:" + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean deleteUserGoodFromCart(int id) {
+        try {
+            Connection connection = DriverManager.getConnection(DB_URL);
+            PreparedStatement statement = connection.prepareStatement("DELETE FROM SHOPPINGCART WHERE ID = ?");
+            statement.setInt(1, id);
+            int updateResult = statement.executeUpdate();
+            connection.close();
+            if(updateResult != 0) return true;
+            else return false;
+        } catch (Exception e) {
+            System.out.println("Failed to delete user's goods from shopping cart: " + e.getMessage());
             return false;
         }
     }

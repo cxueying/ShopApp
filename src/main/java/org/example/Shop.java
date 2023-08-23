@@ -19,6 +19,7 @@ public class Shop {
         boolean runFlag = true;
         String userInput = "";
         while(runFlag) {
+            databaseManager.showUserShoppingCart(User.getUserAccount());
             System.out.println("购物");
             System.out.println("1、将商品加入购物车");
             System.out.println("2、从购物车中移除商品");
@@ -27,6 +28,10 @@ public class Shop {
             System.out.println("5、查看购买历史");
             System.out.println("6、返回上一级");
             System.out.print("->");
+
+            while(scanner.hasNext("\\n")) {
+                scanner.next();
+            }
             userInput = scanner.nextLine();
 
             switch(userInput) {
@@ -48,12 +53,18 @@ public class Shop {
         System.out.print("请输入商品数量：");
         int quantity = scanner.nextInt();
         databaseManager.addGoodsToCart(id, User.getUserAccount(), quantity);
-        databaseManager.showUserShoppingCart(User.getUserAccount());
-        scanner.nextLine();
     }
 
     private void removeGoodeFromShoppingCart() {
-
+        databaseManager.showUserShoppingCart(User.getUserAccount());
+        System.out.print("请选择要删除的商品ID：");
+        int id = scanner.nextInt();
+        if(databaseManager.deleteUserGoodFromCart(id)) {
+            System.out.println("删除成功");
+        } else {
+            System.out.println("操作失败，购物车中不存在该商品");
+        }
+        
     }
 
     private void changeGoodsOnShoppingCart() {

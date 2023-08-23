@@ -27,6 +27,10 @@ public class GoodsManager {
             System.out.println("5、查看商品信息");
             System.out.println("6、返回上一级");
             System.out.print("->");
+
+            while(scanner.hasNext("\\n")) {//清除多余的回车 \n
+                scanner.next();
+            }
             userInput = scanner.nextLine();
 
             switch(userInput) {
@@ -80,10 +84,10 @@ public class GoodsManager {
             System.out.print("请选择要修改商品ID：");
             int ID = scanner.nextInt();
             System.out.println("请选择要修改的信息");
-            System.out.println("１、商品名称");
-            System.out.println("２、价格");
-            System.out.println("３、数量");
-            System.out.println("４、取消");
+            System.out.println("1、商品名称");
+            System.out.println("2、价格");
+            System.out.println("3、数量");
+            System.out.println("4、取消");
             System.out.print("->");
             String choice = scanner.nextLine();
             choice = scanner.nextLine();
