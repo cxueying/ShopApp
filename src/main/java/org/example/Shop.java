@@ -68,14 +68,53 @@ public class Shop {
     }
 
     private void changeGoodsOnShoppingCart() {
-
+        databaseManager.showUserShoppingCart(User.getUserAccount());
+        System.out.print("请输入商品id：");
+        int id = scanner.nextInt();
+        if(databaseManager.showUserGoods(id)) {
+            System.out.println("请选择要修改的信息：");
+            System.out.println("1、修改商品数量");
+            System.out.println(("2、取消"));
+            System.out.print("->");
+            while(!scanner.hasNextInt()) {
+                scanner.next();
+            }
+            int choice = scanner.nextInt();
+            switch(choice) {
+                case 1 : {
+                    System.out.print("请输入新的数量：");
+                    while(!scanner.hasNextInt()) {
+                        scanner.next();
+                    }
+                    int newQuantity = scanner.nextInt();
+                    if(databaseManager.changeUserGoodsQuantity(id, newQuantity)) {
+                        System.out.println("修改成功");
+                    } else {
+                        System.out.println("修改失败");
+                    }
+                    break;
+                }
+                case 2 : System.out.println(("操作取消!"));break;
+                default: return;
+            }
+        } else {
+            System.out.println("输入id不存在购物车中，操作取消");
+        }
     }
 
     private void checkout() {
-
+        databaseManager.showUserShoppingCart(User.getUserAccount());
+        double price = databaseManager.checkout(User.getUserAccount());
+        if(price == -2) {
+            System.out.println("商品库存不足，结账失败");
+        } else {
+            System.out.println("总价格：" + price);
+            System.out.println("交易成功");
+        }
+        
     }
 
     private void inquirePurchaseHistory() {
-
+        databaseManager.showUserShopHistory(User.getUserAccount());
     }
 }

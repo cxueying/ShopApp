@@ -5,6 +5,10 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.TimeZone;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class DatabaseManager {
@@ -453,6 +457,127 @@ public class DatabaseManager {
             else return false;
         } catch (Exception e) {
             System.out.println("Failed to delete user's goods from shopping cart: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean showUserGoods(int id) {
+        try {
+            Connection connection = DriverManager.getConnection(DB_URL);
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM SHOPPINGCART WHERE ID = ?");
+            statement.setInt(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            if(resultSet.next()) {
+                System.out.println("ID = " + resultSet.getInt("ID") + " PRICE = " + resultSet.getDouble("PRICE") + " QUANTITY = " + resultSet.getInt("QUANTITY"));
+                connection.close();
+                return true;
+            } else {
+                connection.close();
+                return false;
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to show user's goods on shopping cart: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean changeUserGoodsQuantity(int id, int newQuantity) {
+        try {
+            Connection connection = DriverManager.getConnection(DB_URL);
+            PreparedStatement statement = connection.prepareStatement("UPDATE SHOPPINGCART SET QUANTITY = ? WHERE ID = ?");
+            statement.setInt(1, newQuantity);
+            statement.setInt(2, id);
+            int updateResult = statement.executeUpdate();
+            connection.close();
+            if(updateResult != 0) return true;
+            else return false;
+        } catch (Exception e) {
+            System.out.println("Failed to change quantity: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public double checkout(String userAccount) {//实现计算总价、更新商品信息、添加购物信息到历史记录、清空用户购物车
+        try {
+            double price = 0;
+            Connection connection = DriverManager.getConnection(DB_URL);
+            PreparedStatement cartStatement = connection.prepareStatement("SELECT * FROM SHOPPINGCART WHERE USERACCOUNT = ?");//购物车
+            PreparedStatement goodsStatement = connection.prepareStatement("SELECT * FROM GOODS WHERE ID = ?");//商品
+            cartStatement.setString(1, userAccount);
+            ResultSet cartResultSet = cartStatement.executeQuery();
+            ResultSet goodsResultSet;
+            while(cartResultSet.next()) {//计算总价格，判断购物车商品数量是否大于库存数量，大于则返回-2
+                goodsStatement.setInt(1, cartResultSet.getInt("ID"));
+                goodsResultSet = goodsStatement.executeQuery();
+                if(cartResultSet.getInt("QUANTITY") > goodsResultSet.getInt("QUANTITY")) {//用户购物车商品数量大于货物数量
+                    price = -2;
+                    break;
+                }
+                price += cartResultSet.getDouble("PRICE") * cartResultSet.getInt("QUANTITY");
+            }
+
+            //获取东八区时间
+            Date date = new Date();
+            TimeZone timeZone = TimeZone.getTimeZone("Asia/Shanghai");
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            dateFormat.setTimeZone(timeZone);
+            String time = dateFormat.format(date);
+
+            if(price != -2) {
+                PreparedStatement goodsUpdateStatement = connection.prepareStatement("UPDATE GOODS SET QUANTITY = ? WHERE ID = ?");//更新商品数量
+                PreparedStatement addToShopHistoryStatement = connection.prepareStatement("INSERT INTO SHOPHISTORY (TIME, USERACCOUNT, ID, GOODSNAME, QUANTITY, PRICE) VALUES (?, ?, ?, ?, ?, ?)");//将购入信息加入表SHOPHISTORY
+                PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM SHOPPINGCART WHERE ID = ?");//删除购物车中的商品
+
+                cartResultSet = cartStatement.executeQuery();
+
+                while(cartResultSet.next()) {
+                    //更新商品信息
+                    goodsStatement.setInt(1, cartResultSet.getInt("ID"));
+                    goodsResultSet = goodsStatement.executeQuery();
+                    goodsUpdateStatement.setInt(1, goodsResultSet.getInt("QUANTITY") - cartResultSet.getInt("QUANTITY"));
+                    goodsUpdateStatement.setInt(2, cartResultSet.getInt("ID"));
+                    goodsUpdateStatement.executeUpdate();
+
+                    //将购入信息加入表SHOPHISTORY
+                    addToShopHistoryStatement.setString(1, time);
+                    addToShopHistoryStatement.setString(2, userAccount);
+                    addToShopHistoryStatement.setInt(3, cartResultSet.getInt("ID"));
+                    addToShopHistoryStatement.setString(4, cartResultSet.getString("GOODSNAME"));
+                    addToShopHistoryStatement.setInt(5, cartResultSet.getInt("QUANTITY"));
+                    addToShopHistoryStatement.setDouble(6, cartResultSet.getDouble("PRICE"));
+                    addToShopHistoryStatement.executeUpdate();
+
+                    //删除购物车中的商品
+                    deleteStatement.setInt(1, cartResultSet.getInt("ID"));
+                    deleteStatement.executeUpdate();
+                }
+            }
+            connection.close();
+            return price;
+        } catch (Exception e) {
+            System.out.println("Failed to check out: " + e.getMessage());
+            return -1;
+        }
+    }
+
+    public boolean showUserShopHistory(String userAccount) {
+        try {
+            Connection connection = DriverManager.getConnection(DB_URL);
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM SHOPHISTORY WHERE USERACCOUNT = ?");
+            statement.setString(1, userAccount);
+            ResultSet resultSet = statement.executeQuery();
+            System.out.printf("%-5s %-18s %-8s    %-8s       %-4s\n", "ID", "GoodsName", "Quantity", "Price", "Time");
+            while(resultSet.next()) {
+                System.out.printf("%-5d %-18s %-8d    %-8.2f %-18s\n", 
+                    resultSet.getInt("ID"),
+                    resultSet.getString("GOODSNAME"),
+                    resultSet.getInt("QUANTITY"), resultSet.getDouble("PRICE"),
+                    resultSet.getString("TIME")
+                );
+            }
+            return true;
+        } catch (Exception e) {
+            System.out.println("Failed to show user's shop history: " + e.getMessage());
             return false;
         }
     }

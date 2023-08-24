@@ -40,6 +40,15 @@ public class DatabaseInitializer {
                                "QUANTITY            INTEGER  NOT NULL)" ;
             statement.executeUpdate(createTableQuery);//创建SHOPPINGCART表
 
+            createTableQuery = "CREATE TABLE IF NOT EXISTS SHOPHISTORY" +
+                               "(TIME               TEXT KEY NOT NULL," +
+                               "USERACCOUNT         TEXT KEY NOT NULL," +
+                               "ID                  INTEGER  NOT NULL," +
+                               "GOODSNAME           TEXT     NOT NULL," +
+                               "PRICE               REAL     NOT NULL," +
+                               "QUANTITY            INTEGER  NOT NULL)" ;
+            statement.executeUpdate(createTableQuery);//创建SHOPHISTORY表
+
             System.out.println("Database initialized successfully!");
         } catch (SQLException e) {
             System.out.println("Failed to initialize database: " + e.getMessage());
