@@ -59,7 +59,7 @@ public class Shop {
         databaseManager.showUserShoppingCart(User.getUserAccount());
         System.out.print("请选择要删除的商品ID：");
         int id = scanner.nextInt();
-        if(databaseManager.deleteUserGoodFromCart(id)) {
+        if(databaseManager.deleteUserGoodFromCart(id, User.getUserAccount())) {
             System.out.println("删除成功");
         } else {
             System.out.println("操作失败，购物车中不存在该商品");
@@ -71,7 +71,7 @@ public class Shop {
         databaseManager.showUserShoppingCart(User.getUserAccount());
         System.out.print("请输入商品id：");
         int id = scanner.nextInt();
-        if(databaseManager.showUserGoods(id)) {
+        if(databaseManager.showUserGoods(id, User.getUserAccount())) {
             System.out.println("请选择要修改的信息：");
             System.out.println("1、修改商品数量");
             System.out.println(("2、取消"));
@@ -87,7 +87,7 @@ public class Shop {
                         scanner.next();
                     }
                     int newQuantity = scanner.nextInt();
-                    if(databaseManager.changeUserGoodsQuantity(id, newQuantity)) {
+                    if(databaseManager.changeUserGoodsQuantity(id, User.getUserAccount(), newQuantity)) {
                         System.out.println("修改成功");
                     } else {
                         System.out.println("修改失败");

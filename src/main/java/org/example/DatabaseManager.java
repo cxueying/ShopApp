@@ -388,26 +388,28 @@ public class DatabaseManager {
         }
     }
 
-    public boolean addGoodsToCart(int id, String username, int quantity) {
+    public boolean addGoodsToCart(int id, String userAccount, int quantity) {
         try {
             Connection connection = DriverManager.getConnection(DB_URL);
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM SHOPPINGCART WHERE ID = ?");
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM SHOPPINGCART WHERE ID = ? AND USERACCOUNT = ?");
             statement.setInt(1, id);
+            statement.setString(2, userAccount);
             ResultSet resultSet = statement.executeQuery();
-            if(resultSet.next()) {
-                statement = connection.prepareStatement("UPDATE SHOPPINGCART SET QUANTITY = ? WHERE ID = ?");
+            if(resultSet.next()) {//购物车中已经存在该商品
+                statement = connection.prepareStatement("UPDATE SHOPPINGCART SET QUANTITY = ? WHERE ID = ? AND USERACCOUNT = ?");
                 statement.setInt(1, resultSet.getInt("QUANTITY") + quantity);
                 statement.setInt(2, id);
+                statement.setString(3, userAccount);
                 statement.executeUpdate();
                 connection.close();
                 return true;
-            }else {
+            }else {//购物车中未存在该商品
                 PreparedStatement statement2 = connection.prepareStatement("SELECT * FROM GOODS WHERE ID = ?");
                 statement2.setInt(1, id);
                 resultSet = statement2.executeQuery();
                 statement2 = connection.prepareStatement("INSERT INTO SHOPPINGCART (USERACCOUNT, ID, GOODSNAME, PRICE, QUANTITY) VALUES (?, ?, ?, ?, ?)");
                 if(resultSet.next()) {
-                    statement2.setString(1, username);
+                    statement2.setString(1, userAccount);
                     statement2.setInt(2,id);
                     statement2.setString(3, resultSet.getString("NAME"));
                     statement2.setDouble(4, resultSet.getDouble("PRICE"));
@@ -426,11 +428,11 @@ public class DatabaseManager {
         }
     }
 
-    public boolean showUserShoppingCart(String username) {
+    public boolean showUserShoppingCart(String userAccount) {
         try {
             Connection connection = DriverManager.getConnection(DB_URL);
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM SHOPPINGCART WHERE USERACCOUNT = ?");
-            statement.setString(1, username);
+            statement.setString(1, userAccount);
             ResultSet resultSet = statement.executeQuery();
             while(resultSet.next()) {
                 System.out.println("ID = " + resultSet.getInt("ID"));
@@ -446,11 +448,12 @@ public class DatabaseManager {
         }
     }
 
-    public boolean deleteUserGoodFromCart(int id) {
+    public boolean deleteUserGoodFromCart(int id, String userAccount) {
         try {
             Connection connection = DriverManager.getConnection(DB_URL);
-            PreparedStatement statement = connection.prepareStatement("DELETE FROM SHOPPINGCART WHERE ID = ?");
+            PreparedStatement statement = connection.prepareStatement("DELETE FROM SHOPPINGCART WHERE ID = ? AND USERACCOUNT = ?");
             statement.setInt(1, id);
+            statement.setString(2, userAccount);
             int updateResult = statement.executeUpdate();
             connection.close();
             if(updateResult != 0) return true;
@@ -461,11 +464,12 @@ public class DatabaseManager {
         }
     }
 
-    public boolean showUserGoods(int id) {
+    public boolean showUserGoods(int id, String userAccount) {
         try {
             Connection connection = DriverManager.getConnection(DB_URL);
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM SHOPPINGCART WHERE ID = ?");
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM SHOPPINGCART WHERE ID = ? AND USERACCOUNT = ?");
             statement.setInt(1, id);
+            statement.setString(2, userAccount);
             ResultSet resultSet = statement.executeQuery();
             if(resultSet.next()) {
                 System.out.println("ID = " + resultSet.getInt("ID") + " PRICE = " + resultSet.getDouble("PRICE") + " QUANTITY = " + resultSet.getInt("QUANTITY"));
@@ -481,12 +485,13 @@ public class DatabaseManager {
         }
     }
 
-    public boolean changeUserGoodsQuantity(int id, int newQuantity) {
+    public boolean changeUserGoodsQuantity(int id, String userAccount ,int newQuantity) {
         try {
             Connection connection = DriverManager.getConnection(DB_URL);
-            PreparedStatement statement = connection.prepareStatement("UPDATE SHOPPINGCART SET QUANTITY = ? WHERE ID = ?");
+            PreparedStatement statement = connection.prepareStatement("UPDATE SHOPPINGCART SET QUANTITY = ? WHERE ID = ? AND USERACCOUNT = ?");
             statement.setInt(1, newQuantity);
             statement.setInt(2, id);
+            statement.setString(3, userAccount);
             int updateResult = statement.executeUpdate();
             connection.close();
             if(updateResult != 0) return true;
