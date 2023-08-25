@@ -49,7 +49,7 @@ public class DatabaseInitializer {
                                "QUANTITY            INTEGER  NOT NULL)" ;
             statement.executeUpdate(createTableQuery);//创建SHOPHISTORY表
 
-            System.out.println("Database initialized successfully!");
+           // System.out.println("Database initialized successfully!");
         } catch (SQLException e) {
             System.out.println("Failed to initialize database: " + e.getMessage());
         }

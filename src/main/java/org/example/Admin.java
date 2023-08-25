@@ -17,7 +17,7 @@ public class Admin {
         String adminInput = "";
         boolean runFlag = true;
         while(runFlag){
-            databaseManager.showAllAdmin();
+            //databaseManager.showAllAdmin();
             System.out.println("购物管理系统");
             System.out.println("当前身份：管理员");
             System.out.print("当前状态：");
@@ -33,6 +33,8 @@ public class Admin {
             System.out.println("5、退出登录");
             System.out.println("6、返回上一级");
             System.out.print("->");
+
+            while(scanner.hasNext("\\n")) scanner.next();
             adminInput = scanner.nextLine();
 
             switch(adminInput){

@@ -14,6 +14,8 @@ public class AdminPasswordManager {
     public void run() {
         if(Admin.getAdminState() == false) {
             System.out.println("当前状态未登录，请先登录");
+            System.out.print("键入Enter继续");
+            scanner.nextLine();
             return;
         }
         String adminInput = "";
@@ -46,6 +48,8 @@ public class AdminPasswordManager {
         
         if(success) {
             System.out.println("密码修改成功");
+            System.out.print("键入Enter继续");
+            scanner.nextLine();
         } else {
             System.out.println("密码修改失败");
         }
@@ -75,24 +79,72 @@ public class AdminPasswordManager {
     private void resetSpecifyUserPassword() {
         boolean runFlag = true;
         String username = "";
+        String adminInput = "";
         while(runFlag) {
             System.out.println("重置用户密码");
             System.out.print("用户名：");
+
+            while(scanner.hasNext("\\n")) scanner.next();
             username = scanner.nextLine();
-            boolean success = databaseManager.userPasswordReset(username);
-            if(success) {
-                System.out.println("用户密码重置成功！");
-                runFlag = false;
-            }else {
-                System.out.println("该用户不存在，是否继续（Y/N）？");
-                System.out.print("->");
-                String adminInput = scanner.nextLine();
-                if(adminInput.equals("y") || adminInput.equals("Y")){
-                    continue;
-                }else {
-                    runFlag = false;
+
+            if(databaseManager.fineUser(username)) {
+                while(true) {
+                    System.out.println("是否重置该用户的密码(Y/N)：" + username);
+                    System.out.print("->");
+                    adminInput = scanner.nextLine();
+                    if(adminInput.equals("y") || adminInput.equals("Y")) {
+                        if(databaseManager.userPasswordReset(username)) {
+                            System.out.println("用户密码重置成功");
+                            System.out.print("键入Enter继续");
+                            scanner.nextLine();
+                            runFlag = false;
+                            break;
+                        }
+                    } else if(adminInput.equals("n") || adminInput.equals("N")){
+                        System.out.println("操作取消");
+                        System.out.print("键入Enter继续");
+                        scanner.nextLine();
+                        runFlag = false;
+                        break;
+                    } else {
+                        System.out.println("输入错误，请重新输入");
+                    }
+                }
+            } else {
+                System.out.println("该用户不存在，是否继续(Y/N)");
+                while(true) {
+                    System.out.print("->");
+                    while(scanner.hasNext("\\n")) scanner.next();
+                    adminInput = scanner.nextLine();
+                    if(adminInput.equals("y") || adminInput.equals("Y")) {
+                        break;
+                    } else if(adminInput.equals("n") || adminInput.equals("N")){
+                        runFlag = false;
+                        break;
+                    } else {
+                        System.out.println("输入错误，请重新输入");
+                    }
                 }
             }
+            // boolean success = databaseManager.userPasswordReset(username);
+            // if(success) {
+            //     System.out.println("用户密码重置成功！");
+            //     System.out.print("键入Enter继续");
+            //     scanner.nextLine();
+            //     runFlag = false;
+            // }else {
+            //     System.out.println("该用户不存在，是否继续（Y/N）？");
+            //     System.out.print("->");
+            //     String adminInput = scanner.nextLine();
+            //     if(adminInput.equals("y") || adminInput.equals("Y")){
+            //         continue;
+            //     }else {
+            //         System.out.println("操作取消");
+            //         System.out.print("键入Enter继续");
+            //         scanner.nextLine();
+            //         runFlag = false;
+            //     }
+            // }
         }
     }
 
@@ -104,11 +156,17 @@ public class AdminPasswordManager {
             boolean success = databaseManager.allUserPasswordReset();
             if(success) {
                 System.out.println("操作成功");
+                System.out.print("键入Enter继续");
+                scanner.nextLine();
             }else {
                 System.out.println("操作失败");
+                System.out.print("键入Enter继续");
+                scanner.nextLine();
             }
         }else {
             System.out.println("操作取消");
+            System.out.print("键入Enter继续");
+            scanner.nextLine();
         }
     }
 }

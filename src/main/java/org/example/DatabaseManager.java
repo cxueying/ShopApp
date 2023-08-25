@@ -64,6 +64,25 @@ public class DatabaseManager {
         return false;
     }
 
+    public boolean fineUser(String userAccount) {
+        try {
+            Connection connection = DriverManager.getConnection(DB_URL);
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM USER WHERE USERACCOUNT = ?");
+            statement.setString(1, userAccount);
+            ResultSet resultSet = statement.executeQuery();
+            if(resultSet.next()) {
+                connection.close();
+                return true;
+            } else {
+                connection.close();
+                return false;
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to find user: " + e.getMessage());
+            return false;
+        }
+    }
+
     public boolean userpasswordChange(String username, String oldPassword, String newPassword) {
         try {
             Connection connection = DriverManager.getConnection(DB_URL);
@@ -253,6 +272,15 @@ public class DatabaseManager {
             PreparedStatement statement = connection.prepareStatement("DELETE FROM USER WHERE USERACCOUNT = ?");
             statement.setString(1, username);
             int updateResult = statement.executeUpdate();
+
+            statement = connection.prepareStatement("DELETE FROM SHOPPINGCART WHERE USERACCOUNT = ?");
+            statement.setString(1, username);
+            statement.executeUpdate();
+
+            statement = connection.prepareStatement("DELETE FROM SHOPHISTORY WHERE USERACCOUNT = ?");
+            statement.setString(1, username);
+            statement.executeUpdate();
+            
             connection.close();
             if(updateResult == 0) return false;
             else return true;

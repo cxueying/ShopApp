@@ -13,6 +13,8 @@ public class GoodsManager {
     public void run() {
         if(Admin.getAdminState() == false) {
             System.out.println("当前状态未登录，请先登录");
+            System.out.print("键入Enter继续");
+            scanner.nextLine();
             return;
         }
 
@@ -28,9 +30,7 @@ public class GoodsManager {
             System.out.println("6、返回上一级");
             System.out.print("->");
 
-            while(scanner.hasNext("\\n")) {//清除多余的回车 \n
-                scanner.next();
-            }
+            while(scanner.hasNext("\\n")) scanner.next();//清除多余的回车 \n
             userInput = scanner.nextLine();
 
             switch(userInput) {
