@@ -52,6 +52,8 @@ public class AdminPasswordManager {
             scanner.nextLine();
         } else {
             System.out.println("密码修改失败");
+            System.out.print("键入Enter继续");
+            scanner.nextLine();
         }
     }
 

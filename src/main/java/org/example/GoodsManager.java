@@ -71,13 +71,13 @@ public class GoodsManager {
             if(success) System.out.println("添加商品成功");
             else System.out.println("添加商品失败");
             System.out.println("是否继续添加商品(Y/N)");
-            while(true) {
+            while(true) { 
                 System.out.print("->");
                 while(scanner.hasNext("\\n")) scanner.next();
                 adminInput = scanner.nextLine();
-                if(adminInput.equals("y") || adminInput.equals("Y")){
+                if(adminInput.equals("y") || adminInput.equals("Y")) {
                     break;
-                }else if(adminInput.equals("n") || adminInput.equals("N")){
+                } else if(adminInput.equals("n") || adminInput.equals("N")) {
                     runFlag = false;
                     break;
                 } else {
@@ -88,73 +88,144 @@ public class GoodsManager {
     }
 
     private void changeGoodsInfo() {
-        System.out.print("请输入要修改信息的商品名称：");
-        String name = scanner.nextLine();
-        System.out.println("商品信息：");
-        if(databaseManager.inquireGoods(name)){
-            System.out.print("请选择要修改商品ID：");
+        boolean runFlag = true;
+        while(runFlag) {
+            System.out.print("请输入要修改信息的商品ID：");
+            while(!scanner.hasNextInt()) scanner.next();
             int ID = scanner.nextInt();
-            System.out.println("请选择要修改的信息");
-            System.out.println("1、商品名称");
-            System.out.println("2、价格");
-            System.out.println("3、数量");
-            System.out.println("4、取消");
-            System.out.print("->");
-            String choice = scanner.nextLine();
-            choice = scanner.nextLine();
-            switch(choice) {
-                case "1" : {
-                    System.out.print("请输入商品名称：");
-                    String newName = scanner.nextLine();
-                    databaseManager.changeGoodsName(ID, newName);
-                    break;
+            boolean run2Flag = true;
+            if(databaseManager.showGoodsInfo(ID)){
+                System.out.println("请选择要修改的信息");
+                System.out.println("1、商品名称");
+                System.out.println("2、价格");
+                System.out.println("3、数量");
+                System.out.println("4、取消");
+                while(run2Flag) {
+                    System.out.print("->");
+                    while(!scanner.hasNextInt()) scanner.next();
+                    int choice = scanner.nextInt();
+                    switch(choice) {
+                        case 1 : {
+                            System.out.print("请输入商品名称：");
+                            String newName = scanner.nextLine();
+                            if(databaseManager.changeGoodsName(ID, newName)) {
+                                System.out.println("操作成功");
+                                System.out.print("键入Enter继续");
+                                scanner.nextLine();
+                            } else {
+                                System.out.println("操作失败");
+                                System.out.print("键入Enter继续");
+                                scanner.nextLine();
+                            }
+                            run2Flag = false;
+                            runFlag = false;
+                            break;
+                        }
+                        case 2 : {
+                            System.out.print("请输入商品价格：");
+                            double newPrice = scanner.nextDouble();
+                            if(databaseManager.changeGoodsPrice(ID, newPrice)) {
+                                System.out.println("操作成功");
+                                System.out.print("键入Enter继续");
+                                scanner.nextLine();
+                            } else {
+                                System.out.println("操作失败");
+                                System.out.print("键入Enter继续");
+                                scanner.nextLine();
+                            }
+                            run2Flag = false;
+                            runFlag = false;
+                            break;
+                        }
+                        case 3 : {
+                            System.out.print("请输入商品数量：");
+                            int newQuantity = scanner.nextInt();
+                            if(databaseManager.changeGoodsQuantity(ID, newQuantity)) {
+                                System.out.println("操作成功");
+                                System.out.print("键入Enter继续");
+                                scanner.nextLine();
+                            } else {
+                                System.out.println("操作失败");
+                                System.out.print("键入Enter继续");
+                                scanner.nextLine();
+                            }
+                            run2Flag = false;
+                            runFlag = false;
+                            break;
+                        }
+                        case 4 : {
+                            System.out.println("操作取消");
+                            System.out.print("键入Enter继续");
+                            scanner.nextLine();
+                            run2Flag = false;
+                            runFlag = false;
+                            break;
+                        }
+                        default  : {
+                            System.out.println("输入错误");
+                            System.out.println("请重新输入");
+                            break;
+                        }
+                    }
                 }
-                case "2" : {
-                    System.out.print("请输入商品价格：");
-                    double newPrice = scanner.nextDouble();
-                    databaseManager.changeGoodsPrice(ID, newPrice);
-                    break;
-                }
-                case "3" : {
-                    System.out.print("请输入商品数量：");
-                    int newQuantity = scanner.nextInt();
-                    databaseManager.changeGoodsQuantity(ID, newQuantity);
-                    break;
-                }
-                case "4" : {
-                    System.out.println("操作取消");
-                    break;
-                }
-                default  : {
-                    System.out.println("输入错误");
-                    break;
+            } else {
+                String adminInput;
+                System.out.println("id为" + ID + "的商品不存在，是否继续(Y/N)");
+                while(true) {
+                    System.out.print("->");
+                    while(scanner.hasNext("\\n")) scanner.next();
+                    adminInput = scanner.nextLine();
+                    if(adminInput.equals("y") || adminInput.equals("Y")) {
+                        break;
+                    } else if(adminInput.equals("n") || adminInput.equals("N")){
+                        runFlag = false;
+                        break;
+                    } else {
+                        System.out.println("输入错误，请重新输入");
+                    }
                 }
             }
         }
     }
 
     private void deleteGoodsInfo() {
-        System.out.print("请输入要删除商品名称：");
-        String name = scanner.nextLine();
-        if(databaseManager.inquireGoods(name)) {
-            System.out.print("请选择要删除商品ID：");
-            int ID = scanner.nextInt();
-            if(databaseManager.deleteGoods(ID)){
-                System.out.println("删除商品成功");
-            }else {
-                System.out.println("删除商品失败");
+        
+        System.out.print("请输入要删除商品ID：");
+        while(!scanner.hasNextInt()) scanner.next();
+        int ID = scanner.nextInt();
+        if(databaseManager.showGoodsInfo(ID)) {
+            System.out.println("是否要删除该商品(Y/N)");
+            String adminInput = "";
+            while(true) {
+                System.out.print("->");
+                while(scanner.hasNext("\\n")) scanner.next();
+                adminInput = scanner.nextLine();
+                if(adminInput.equals("y") || adminInput.equals("Y")) {
+                    if(databaseManager.deleteGoods(ID)){
+                        System.out.println("删除商品成功");
+                    }else {
+                        System.out.println("删除商品失败");
+                    }
+                    break;
+                } else if(adminInput.equals("n") || adminInput.equals("N")){
+                    break;
+                } else {
+                    System.out.println("输入错误，请重新输入");
+                }
             }
-            
         }else {
             System.out.println("该商品不存在！");
+            System.out.print("键入Enter继续");
+            scanner.nextLine();
         }
         
     }
 
     private void inquireGoodsInfo() {
-        System.out.print("请输入要查询商品名称：");
-        String name = scanner.nextLine();
-        if(!databaseManager.inquireGoods(name)) {
+        System.out.print("请输入要查询商品ID：");
+        while(!scanner.hasNextInt()) scanner.next();
+        int ID = scanner.nextInt();
+        if(!databaseManager.showGoodsInfo(ID)) {
             System.out.println("查询失败");
         }
     }

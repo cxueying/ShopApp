@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.TimeZone;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -327,31 +328,56 @@ public class DatabaseManager {
         }
     }
 
-    public boolean inquireGoods(String name) {
+    // public boolean inquireGoods(String name) {
+    //     try {
+    //         Connection connection = DriverManager.getConnection(DB_URL);
+    //         PreparedStatement statement = connection.prepareStatement("SELECT * FROM GOODS WHERE NAME = ?");
+    //         statement.setString(1, name);
+    //         ResultSet resultSet = statement.executeQuery();
+    //         if(resultSet.next()){
+    //             System.out.println("ID = " + resultSet.getInt("ID"));
+    //             System.out.println("NAME = " + resultSet.getString("NAME"));
+    //             System.out.println("PRICE = " + resultSet.getDouble("PRICE"));
+    //             System.out.println("QUANTITY = " + resultSet.getInt("QUANTITY"));
+    //             while(resultSet.next()) {
+    //                 System.out.println("ID = " + resultSet.getInt("ID"));
+    //                 System.out.println("NAME = " + resultSet.getString("NAME"));
+    //                 System.out.println("PRICE = " + resultSet.getDouble("PRICE"));
+    //                 System.out.println("QUANTITY = " + resultSet.getInt("QUANTITY"));
+    //             }
+    //             connection.close();
+    //             return true;
+    //         }else{
+    //             connection.close();
+    //             return false;
+    //         }
+    //     } catch (SQLException e) {
+    //         System.out.println("Failed to inquire goods info: " + e.getMessage());
+    //         return false;
+    //     }
+    // }
+
+    public boolean showGoodsInfo(int ID) {
         try {
             Connection connection = DriverManager.getConnection(DB_URL);
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM GOODS WHERE NAME = ?");
-            statement.setString(1, name);
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM GOODS WHERE ID = ?");
+            statement.setInt(1, ID);
             ResultSet resultSet = statement.executeQuery();
-            if(resultSet.next()){
-                System.out.println("ID = " + resultSet.getInt("ID"));
-                System.out.println("NAME = " + resultSet.getString("NAME"));
-                System.out.println("PRICE = " + resultSet.getDouble("PRICE"));
-                System.out.println("QUANTITY = " + resultSet.getInt("QUANTITY"));
-                while(resultSet.next()) {
-                    System.out.println("ID = " + resultSet.getInt("ID"));
-                    System.out.println("NAME = " + resultSet.getString("NAME"));
-                    System.out.println("PRICE = " + resultSet.getDouble("PRICE"));
-                    System.out.println("QUANTITY = " + resultSet.getInt("QUANTITY"));
-                }
+            if(resultSet.next()) {
+                System.out.printf("ID = %d\tNAME = %s\tQUANTITY = %d\tPRICE = %.2f\n", 
+                    resultSet.getInt("ID"),
+                    resultSet.getString("NAME"),
+                    resultSet.getInt("QUANTITY"),
+                    resultSet.getDouble("PRICE")
+                );
                 connection.close();
                 return true;
-            }else{
+            } else {
                 connection.close();
                 return false;
             }
-        } catch (SQLException e) {
-            System.out.println("Failed to inquire goods info: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Failed to show goods info: " + e.getMessage());
             return false;
         }
     }
