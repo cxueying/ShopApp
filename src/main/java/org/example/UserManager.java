@@ -95,7 +95,7 @@ public class UserManager {
                         break;
                     } else {
                         System.out.println("输入错误，请重新输入");
-                    } 
+                    }
                 }
                 
             }
@@ -112,16 +112,29 @@ public class UserManager {
         String adminInput = "";
         boolean runFlag = true;
         while(runFlag) {
-            System.out.println("请输入要查询的用户名");
+            System.out.print("请输入要查询的用户名：");
             while(scanner.hasNext("\\n")) scanner.next();
             username = scanner.nextLine();
             if(databaseManager.showUserInfo(username)) {
-
-            }else {
+                System.out.print("键入任意键继续");
+                scanner.nextLine();
+                runFlag = false;
+            } else {
                 System.out.println("查询失败，该用户不存在");
                 System.out.println("是否继续查询(Y/N)");
-                System.out.print("->");
-                
+                while(true) {
+                    System.out.print("->");
+                    while(scanner.hasNext("\\n")) scanner.next();
+                    adminInput = scanner.nextLine();
+                    if(adminInput.equals("y") || adminInput.equals("Y")){
+                        break;
+                    }else if(adminInput.equals("n") || adminInput.equals("N")){
+                        runFlag = false;
+                        break;
+                    } else {
+                        System.out.println("输入错误，请重新输入");
+                    }
+                }
             }
         }
     }

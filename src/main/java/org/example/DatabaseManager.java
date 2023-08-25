@@ -280,7 +280,7 @@ public class DatabaseManager {
             statement = connection.prepareStatement("DELETE FROM SHOPHISTORY WHERE USERACCOUNT = ?");
             statement.setString(1, username);
             statement.executeUpdate();
-            
+
             connection.close();
             if(updateResult == 0) return false;
             else return true;
@@ -295,11 +295,14 @@ public class DatabaseManager {
             Connection connection = DriverManager.getConnection(DB_URL);
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM GOODS");
             ResultSet resultSet = statement.executeQuery();
+            System.out.printf("%-5s  %-15s     %-8s  %-8s\n", "ID", "NAME", "PRICE", "QUANTITY");
             while(resultSet.next()) {
-                System.out.println("ID = " + resultSet.getString("ID"));
-                System.out.println("NAME = " + resultSet.getString("NAME"));
-                System.out.println("PRICE = " + resultSet.getString("PRICE"));
-                System.out.println("QUANTITY = " + resultSet.getString("QUANTITY"));
+                System.out.printf("%-5d  %-15s  %8.2f    %8d\n", 
+                    resultSet.getInt("ID"),
+                    resultSet.getString("NAME"),
+                    resultSet.getDouble("PRICE"),
+                    resultSet.getInt("QUANTITY")
+                );
             }
             connection.close();
         } catch (SQLException e) {

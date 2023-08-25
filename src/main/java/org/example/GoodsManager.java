@@ -23,7 +23,7 @@ public class GoodsManager {
         while(runFlag) {
             System.out.println("商品管理");
             System.out.println("1、列出所有商品信息");
-            System.out.println("2、添加商品信息");
+            System.out.println("2、添加商品");
             System.out.println("3、修改商品信息");
             System.out.println("4、删除商品信息");
             System.out.println("5、查看商品信息");
@@ -52,28 +52,39 @@ public class GoodsManager {
 
     private void addGoodsInfo() {
         boolean runFlag = true;
-        while(runFlag){
+        String adminInput = "";
+        String name = "";
+        double price = -1.0;
+        int quantity = -1;
+        while(runFlag) {
             System.out.println("添加商品信息");
             System.out.print("商品名称：");
-            String name = scanner.nextLine();
+            while(scanner.hasNext("\\n")) scanner.next();
+            name = scanner.nextLine();
             System.out.print("商品价格：");
-            double price = scanner.nextDouble();
+            while(!scanner.hasNextDouble()) scanner.next();
+            price = scanner.nextDouble();
             System.out.print("商品数量：");
-            int quantity = scanner.nextInt();
+            while(!scanner.hasNextInt()) scanner.next();
+            quantity = scanner.nextInt();
             boolean success = databaseManager.addGoods(name, price, quantity);
             if(success) System.out.println("添加商品成功");
             else System.out.println("添加商品失败");
             System.out.println("是否继续添加商品(Y/N)");
-            System.out.print("->");
-            String adminInput = scanner.nextLine();
-            adminInput = scanner.nextLine();
-            if(adminInput.equals("y") || adminInput.equals("Y")) continue;
-            else if(adminInput.equals("n") || adminInput.equals("N")) {
-                System.out.println("操作结束");
-                break;
+            while(true) {
+                System.out.print("->");
+                while(scanner.hasNext("\\n")) scanner.next();
+                adminInput = scanner.nextLine();
+                if(adminInput.equals("y") || adminInput.equals("Y")){
+                    break;
+                }else if(adminInput.equals("n") || adminInput.equals("N")){
+                    runFlag = false;
+                    break;
+                } else {
+                    System.out.println("输入错误，请重新输入");
+                }
             }
-        }
-        
+        }       
     }
 
     private void changeGoodsInfo() {
