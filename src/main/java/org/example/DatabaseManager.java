@@ -347,35 +347,6 @@ public class DatabaseManager {
         }
     }
 
-    // public boolean inquireGoods(String name) {
-    //     try {
-    //         Connection connection = DriverManager.getConnection(DB_URL);
-    //         PreparedStatement statement = connection.prepareStatement("SELECT * FROM GOODS WHERE NAME = ?");
-    //         statement.setString(1, name);
-    //         ResultSet resultSet = statement.executeQuery();
-    //         if(resultSet.next()){
-    //             System.out.println("ID = " + resultSet.getInt("ID"));
-    //             System.out.println("NAME = " + resultSet.getString("NAME"));
-    //             System.out.println("PRICE = " + resultSet.getDouble("PRICE"));
-    //             System.out.println("QUANTITY = " + resultSet.getInt("QUANTITY"));
-    //             while(resultSet.next()) {
-    //                 System.out.println("ID = " + resultSet.getInt("ID"));
-    //                 System.out.println("NAME = " + resultSet.getString("NAME"));
-    //                 System.out.println("PRICE = " + resultSet.getDouble("PRICE"));
-    //                 System.out.println("QUANTITY = " + resultSet.getInt("QUANTITY"));
-    //             }
-    //             connection.close();
-    //             return true;
-    //         }else{
-    //             connection.close();
-    //             return false;
-    //         }
-    //     } catch (SQLException e) {
-    //         System.out.println("Failed to inquire goods info: " + e.getMessage());
-    //         return false;
-    //     }
-    // }
-
     public boolean showGoodsInfo(int ID) {
         try {
             Connection connection = DriverManager.getConnection(DB_URL);
@@ -537,10 +508,6 @@ public class DatabaseManager {
                     resultSet.getInt("QUANTITY"),
                     resultSet.getDouble("PRICE")
                 );
-                // System.out.println("ID = " + resultSet.getInt("ID"));
-                // System.out.println("GOODSNAME = " + resultSet.getString("GOODSNAME"));
-                // System.out.println("PRICE = " + resultSet.getDouble("PRICE"));
-                // System.out.println("QUANTITY = " + resultSet.getInt("QUANTITY"));
             }
             connection.close();
             return true;
@@ -562,27 +529,6 @@ public class DatabaseManager {
             else return false;
         } catch (Exception e) {
             System.out.println("Failed to delete user's goods from shopping cart: " + e.getMessage());
-            return false;
-        }
-    }
-
-    public boolean showUserGoods(int id, String userAccount) {
-        try {
-            Connection connection = DriverManager.getConnection(DB_URL);
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM SHOPPINGCART WHERE ID = ? AND USERACCOUNT = ?");
-            statement.setInt(1, id);
-            statement.setString(2, userAccount);
-            ResultSet resultSet = statement.executeQuery();
-            if(resultSet.next()) {
-                System.out.println("ID = " + resultSet.getInt("ID") + " PRICE = " + resultSet.getDouble("PRICE") + " QUANTITY = " + resultSet.getInt("QUANTITY"));
-                connection.close();
-                return true;
-            } else {
-                connection.close();
-                return false;
-            }
-        } catch (Exception e) {
-            System.out.println("Failed to show user's goods on shopping cart: " + e.getMessage());
             return false;
         }
     }
@@ -664,6 +610,25 @@ public class DatabaseManager {
         } catch (Exception e) {
             System.out.println("Failed to check out: " + e.getMessage());
             return -1;
+        }
+    }
+
+    public boolean userShoppingCartEmpty(String userAccount) {
+        try {
+            Connection connection = DriverManager.getConnection(DB_URL);
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM SHOPPINGCART WHERE USERACCOUNT = ?");
+            statement.setString(1, userAccount);
+            ResultSet resultSet = statement.executeQuery();
+            if(resultSet.next()) {
+                connection.close();
+                return true;
+            } else {
+                connection.close();
+                return false;
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to inquire the user shopping cart situation: " + e.getMessage());
+            return false;
         }
     }
 
