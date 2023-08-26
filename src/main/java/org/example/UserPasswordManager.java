@@ -44,9 +44,13 @@ public class UserPasswordManager {
         boolean success = databaseManager.userpasswordChange(User.getUserAccount(), oldPassword, newPassword);
         
         if(success) {
-            System.out.println("密码修改成功");
+            System.out.println("密码修改成功!");
+            System.out.print("键入Enter继续");
+            scanner.nextLine();
         } else {
-            System.out.println("密码修改失败");
+            System.out.println("密码修改失败! 请联系管理员处理");
+            System.out.print("键入Enter继续");
+            scanner.nextLine();
         }
     }
 
@@ -58,12 +62,31 @@ public class UserPasswordManager {
         boolean runFlag = true;
         while(runFlag){
             System.out.println("是否需要重置密码（Y/N）");
+            System.out.print("->");
             String userInput = scanner.nextLine();
             switch(userInput) {
                 case "y" :
-                case "Y" : databaseManager.userPasswordReset(User.getUserAccount()); runFlag = false; break;
+                case "Y" : {
+                    if(databaseManager.userPasswordReset(User.getUserAccount())) {
+                        System.out.println("密码重置成功！重置后的密码为用户名");
+                        System.out.print("键入Enter键继续");
+                        scanner.nextLine();
+                    } else {
+                        System.out.println("密码重置失败！请联系管理员处理");
+                        System.out.print("键入Enter键继续");
+                        scanner.nextLine();
+                    }
+                    runFlag = false;
+                    break;
+                }
                 case "n" :
-                case "N" : System.out.println("操作取消"); runFlag = false; break;
+                case "N" : {
+                    System.out.println("操作取消");
+                    System.out.print("键入Enter键继续");
+                    scanner.nextLine();
+                    runFlag = false;
+                    break;
+                }
                 default  : System.out.println("输入错误，请重新输入");break;
             }
         }

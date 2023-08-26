@@ -17,7 +17,7 @@ public class User{
         String userInput = "";
         boolean runFlag = true;
         while(runFlag){
-            databaseManager.showAllUser();
+            databaseManager.showAllUser();//********************** */
             System.out.println("购物管理系统");
             System.out.println("当前身份：用户");
             System.out.print("当前状态：");

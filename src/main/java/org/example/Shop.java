@@ -19,7 +19,7 @@ public class Shop {
         boolean runFlag = true;
         String userInput = "";
         while(runFlag) {
-            databaseManager.showUserShoppingCart(User.getUserAccount());
+            databaseManager.showUserShoppingCart(User.getUserAccount());/************************************ */
             System.out.println("购物");
             System.out.println("1、将商品加入购物车");
             System.out.println("2、从购物车中移除商品");
@@ -47,24 +47,120 @@ public class Shop {
     }
 
     private void addGoodsToShoppingCart() {
+        System.out.println("商品列表");
         databaseManager.showAllGoods();
-        System.out.print("请选择要添加商品ID：");
-        int id = scanner.nextInt();
-        System.out.print("请输入商品数量：");
-        int quantity = scanner.nextInt();
-        databaseManager.addGoodsToCart(id, User.getUserAccount(), quantity);
+
+        String userInput = "";
+        boolean runFlag = true;
+        while(runFlag) {
+            System.out.print("请选择要添加商品ID：");
+            while(!scanner.hasNextInt()) scanner.next();
+            int ID = scanner.nextInt();
+            scanner.nextLine();
+
+            if(databaseManager.findGoods(ID)) {
+                System.out.print("请输入商品数量：");
+                while(!scanner.hasNextInt()) scanner.next();
+                int quantity = scanner.nextInt();
+                scanner.nextLine();
+
+                if(databaseManager.addGoodsToCart(ID, User.getUserAccount(), quantity)) {
+                    System.out.println("商品加入购物车成功");
+                    System.out.println("是否继续添加商品到购物车(Y/N)");
+                    while(true) {
+                        System.out.print("->");
+                        userInput = scanner.nextLine();
+                        if(userInput.equals("y") || userInput.equals("Y")) {
+                            break;
+                        } else if(userInput.equals("n") || userInput.equals("N")) {
+                            runFlag = false;
+                            break;
+                        } else {
+                            System.out.println("输入错误，请重新输入");
+                        }
+                    }
+                } else {
+                    System.out.println("商品加入购物车失败！请联系管理员");
+                    runFlag = false;
+                    System.out.print("键入Enter继续");
+                    scanner.nextLine();
+                }
+            } else {
+                System.out.println("ID为 " + ID + " 的商品不存在，是否重新选择(Y/N)");
+                while(true) {
+                    System.out.print("->");
+                    userInput = scanner.nextLine();
+                    if(userInput.equals("y") || userInput.equals("Y")) {
+                        break;
+                    } else if(userInput.equals("n") || userInput.equals("N")) {
+                        runFlag = false;
+                        break;
+                    } else {
+                        System.out.println("输入错误，请重新输入");
+                    }
+                }
+            }
+        }
     }
 
     private void removeGoodeFromShoppingCart() {
-        databaseManager.showUserShoppingCart(User.getUserAccount());
-        System.out.print("请选择要删除的商品ID：");
-        int id = scanner.nextInt();
-        if(databaseManager.deleteUserGoodFromCart(id, User.getUserAccount())) {
-            System.out.println("删除成功");
-        } else {
-            System.out.println("操作失败，购物车中不存在该商品");
-        }
+        //System.out.println("购物车");
+        //databaseManager.showUserShoppingCart(User.getUserAccount());
         
+        String userInput = "";
+        boolean runFlag = true;
+        while(runFlag) {
+            System.out.println("请选择要删除的商品ID");
+            System.out.print("->");
+            while(!scanner.hasNextInt()) scanner.next();
+            int ID = scanner.nextInt();
+            scanner.nextLine();
+
+            if(databaseManager.findUserGoods(ID)) {
+                System.out.println("是否删除ID为 " + ID + " 的商品(Y/N)");
+                while(true) {
+                    System.out.print("->");
+                    userInput = scanner.nextLine();
+                    if(userInput.equals("y") || userInput.equals("Y")) {
+                        if(databaseManager.deleteUserGoodFromCart(ID, User.getUserAccount())) {
+                            System.out.println("删除成功！");
+                            System.out.print("键入Enter键继续");
+                            scanner.nextLine();
+                            runFlag = false;
+                            break;
+                        } else {
+                            System.out.println("删除失败！请联系管理员处理");
+                            System.out.print("键入Enter键继续");
+                            scanner.nextLine();
+                            runFlag = false;
+                            break;
+                        }
+                    } else if(userInput.equals("n") || userInput.equals("N")) {
+                        System.out.println("操作取消");
+                        System.out.print("键入Enter键继续");
+                        scanner.nextLine();
+                        runFlag = false;
+                        break;
+                    } else {
+                        System.out.println("输入错误，请重新输入");
+                    }
+                }
+            } else {
+                System.out.println("所输入ID为 " + ID+ " 的商品不存在购物车中，是否继续(Y/N)");
+                while(true) {
+                    System.out.print("->");
+                    userInput = scanner.nextLine();
+                    if(userInput.equals("y") || userInput.equals("Y")) {
+                        break;
+                    } else if(userInput.equals("n") || userInput.equals("N")) {
+                        runFlag = false;
+                        break;
+                    } else {
+                        System.out.println("输入错误，请重新输入");
+                    }
+                }
+            }
+        }
     }
 
     private void changeGoodsOnShoppingCart() {
