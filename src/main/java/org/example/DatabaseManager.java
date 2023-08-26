@@ -364,11 +364,11 @@ public class DatabaseManager {
             statement.setInt(1, ID);
             ResultSet resultSet = statement.executeQuery();
             if(resultSet.next()) {
-                System.out.printf("ID = %d\tNAME = %s\tQUANTITY = %d\tPRICE = %.2f\n", 
+                System.out.printf("ID = %d\tNAME = %s\tPRICE = %.2f\tQUANTITY = %d\n", 
                     resultSet.getInt("ID"),
                     resultSet.getString("NAME"),
-                    resultSet.getInt("QUANTITY"),
-                    resultSet.getDouble("PRICE")
+                    resultSet.getDouble("PRICE"),
+                    resultSet.getInt("QUANTITY")
                 );
                 connection.close();
                 return true;

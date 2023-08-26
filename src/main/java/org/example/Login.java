@@ -13,8 +13,10 @@ public class Login {
     }
 
     public boolean run(String identity) {
-        if(User.getUserState() == true) {
+        if(User.getUserState() == true || Admin.getAdminState() == true) {
             System.out.println("当前已登录，请先退出登录");
+            System.out.print("键入Enter键继续");
+            scanner.nextLine();
             return false;
         }
 
