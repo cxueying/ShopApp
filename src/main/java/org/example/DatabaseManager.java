@@ -7,8 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.TimeZone;
 
-import javax.naming.directory.DirContext;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
