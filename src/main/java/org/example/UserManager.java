@@ -50,7 +50,7 @@ public class UserManager {
         while(runFlag) {
             System.out.print("请输入用户名：");
             username = scanner.nextLine();
-            if(databaseManager.fineUser(username)){
+            if(databaseManager.findUser(username)){
                 databaseManager.showUserInfo(username);
                 System.out.println("是否要删除该用户信息（Y/N）?");
                 while(true) {

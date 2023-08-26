@@ -11,12 +11,32 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 
 public class DatabaseManager {
     private static int userID = 1;
     private static int goodsID = 1;
+    
 
     private static final String DB_URL = "jdbc:sqlite:dataBase.db";
+
+    private static String md5(String data) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] md5 = md.digest(data.getBytes(StandardCharsets.UTF_8));
+            StringBuilder sb = new StringBuilder();
+            for(byte b: md5) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 
     public boolean userRegister(String username, String password) {
         try {
@@ -33,8 +53,8 @@ public class DatabaseManager {
             PreparedStatement statement = connection.prepareStatement("INSERT INTO USER (ID, USERACCOUNT, PASSWORD, DEFAULTPASSWORD) VALUES (?, ?, ?, ?)");
             statement.setInt(1, userID++);
             statement.setString(2, username);
-            statement.setString(3, password);
-            statement.setString(4,username);
+            statement.setString(3, md5(password));
+            statement.setString(4,md5(username));
             statement.executeUpdate();
             connection.close();
             return true;
@@ -56,7 +76,7 @@ public class DatabaseManager {
             if (resultSet.next()) {
                 String storedPassword = resultSet.getString("PASSWORD");
                 connection.close();
-                if (password.equals(storedPassword)) return true;
+                if (md5(password).equals(storedPassword)) return true;
                 else return false;
             } else return false;
         } catch (SQLException e) {
@@ -65,7 +85,7 @@ public class DatabaseManager {
         return false;
     }
 
-    public boolean fineUser(String userAccount) {
+    public boolean findUser(String userAccount) {
         try {
             Connection connection = DriverManager.getConnection(DB_URL);
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM USER WHERE USERACCOUNT = ?");
@@ -84,13 +104,13 @@ public class DatabaseManager {
         }
     }
 
-    public boolean userpasswordChange(String username, String oldPassword, String newPassword) {
+    public boolean userPasswordChange(String username, String oldPassword, String newPassword) {
         try {
             Connection connection = DriverManager.getConnection(DB_URL);
             PreparedStatement statement = connection.prepareStatement("UPDATE USER set PASSWORD = ? WHERE USERACCOUNT = ? AND PASSWORD = ?");
-            statement.setString(1, newPassword);
+            statement.setString(1, md5(newPassword));
             statement.setString(2, username);
-            statement.setString(3, oldPassword);
+            statement.setString(3, md5(oldPassword));
             int updateResult = statement.executeUpdate();
             connection.close();
             if(updateResult == 0) return false;
@@ -204,7 +224,7 @@ public class DatabaseManager {
             PreparedStatement statement = connection.prepareStatement("INSERT INTO ADMIN (ID, ADMINACCOUNT, PASSWORD) VALUES (?, ?, ?)");
             statement.setInt(1, 1);
             statement.setString(2, "admin");
-            statement.setString(3, "admin");
+            statement.setString(3, md5("admin"));
             statement.executeUpdate();
             connection.close();
         }catch(SQLException e) {
@@ -224,7 +244,7 @@ public class DatabaseManager {
             if (resultSet.next()) {
                 String storedPassword = resultSet.getString("PASSWORD");
                 connection.close();
-                if (password.equals(storedPassword)) return true;
+                if (md5(password).equals(storedPassword)) return true;
                 else return false;
             } else return false;
         } catch (SQLException e) {
@@ -254,9 +274,9 @@ public class DatabaseManager {
         try {
             Connection connection = DriverManager.getConnection(DB_URL);
             PreparedStatement statement = connection.prepareStatement("UPDATE ADMIN set PASSWORD = ? WHERE ADMINACCOUNT = ? AND PASSWORD = ?");
-            statement.setString(1, newPassword);
+            statement.setString(1, md5(newPassword));
             statement.setString(2, adminname);
-            statement.setString(3, oldPassword);
+            statement.setString(3, md5(oldPassword));
             int updateResult = statement.executeUpdate();
             connection.close();
             if(updateResult == 0) return false;

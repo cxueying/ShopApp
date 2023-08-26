@@ -41,14 +41,14 @@ public class UserPasswordManager {
         System.out.print("新密码：");
         String newPassword = scanner.nextLine();
         
-        boolean success = databaseManager.userpasswordChange(User.getUserAccount(), oldPassword, newPassword);
+        boolean success = databaseManager.userPasswordChange(User.getUserAccount(), oldPassword, newPassword);
         
         if(success) {
             System.out.println("密码修改成功!");
             System.out.print("键入Enter继续");
             scanner.nextLine();
         } else {
-            System.out.println("密码修改失败! 请联系管理员处理");
+            System.out.println("密码修改失败! ");
             System.out.print("键入Enter继续");
             scanner.nextLine();
         }
@@ -68,7 +68,7 @@ public class UserPasswordManager {
                 case "y" :
                 case "Y" : {
                     if(databaseManager.userPasswordReset(User.getUserAccount())) {
-                        System.out.println("密码重置成功！重置后的密码为用户名");
+                        System.out.println("密码重置成功！");
                         System.out.print("键入Enter键继续");
                         scanner.nextLine();
                     } else {

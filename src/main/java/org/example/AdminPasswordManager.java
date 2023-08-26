@@ -89,7 +89,7 @@ public class AdminPasswordManager {
             while(scanner.hasNext("\\n")) scanner.next();
             username = scanner.nextLine();
 
-            if(databaseManager.fineUser(username)) {
+            if(databaseManager.findUser(username)) {
                 while(true) {
                     System.out.println("是否重置该用户的密码(Y/N)：" + username);
                     System.out.print("->");

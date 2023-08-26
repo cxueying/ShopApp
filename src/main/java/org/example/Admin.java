@@ -17,7 +17,7 @@ public class Admin {
         String adminInput = "";
         boolean runFlag = true;
         while(runFlag){
-            //databaseManager.showAllAdmin();
+            databaseManager.showAllAdmin();
             System.out.println("购物管理系统");
             System.out.println("当前身份：管理员");
             System.out.print("当前状态：");
