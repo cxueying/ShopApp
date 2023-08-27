@@ -38,9 +38,9 @@ public class GoodsManager {
 
             switch(userInput) {
                 case 1 : showAllGoodsInfo(); break;
-                case 2 : addGoodsInfo(); break;
+                case 2 : addGoods(); break;
                 case 3 : changeGoodsInfo(); break;
-                case 4 : deleteGoodsInfo(); break;
+                case 4 : deleteGoods(); break;
                 case 5 : inquireGoodsInfo(); break;
                 case 6 : runFlag = false; break;
                 default: System.out.println("输入错误，请重新输入"); break;
@@ -53,7 +53,7 @@ public class GoodsManager {
         databaseManager.showAllGoods();
     }
 
-    private void addGoodsInfo() {
+    private void addGoods() {
         boolean runFlag = true;
         String adminInput = "";
         int ID = -1;
@@ -229,14 +229,14 @@ public class GoodsManager {
         }
     }
 
-    private void deleteGoodsInfo() {
+    private void deleteGoods() {
         System.out.print("请输入要删除商品ID：");
         while(!scanner.hasNextInt()) scanner.next();
         int ID = scanner.nextInt();
         scanner.nextLine();
 
-        if(databaseManager.showGoodsInfo(ID)) {
-            System.out.println("是否要删除该商品(Y/N)");
+        if(databaseManager.findGoods(ID)) {
+            System.out.println("删除后无法恢复，是否要删除该商品(Y/N)");
             String adminInput = "";
             while(true) {
                 System.out.print("->");

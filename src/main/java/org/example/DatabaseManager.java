@@ -426,11 +426,27 @@ public class DatabaseManager {
         }
     } 
 
-    public boolean changeGoodsName(int ID, String name) {
+    public boolean changeGoodsID(int ID, int newID) {
+        try {
+            Connection connection = DriverManager.getConnection(DB_URL);
+            PreparedStatement statement = connection.prepareStatement("UPDATE GOODS SET ID = ? WHERE ID = ?");
+            statement.setInt(1, newID);
+            statement.setInt(2, ID);
+            int updataResult = statement.executeUpdate();
+            connection.close();
+            if(updataResult != 0) return true;
+            else return false;
+        } catch (Exception e) {
+            System.out.println("Failed to chang goods ID: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean changeGoodsName(int ID, String newName) {
         try {
             Connection connection = DriverManager.getConnection(DB_URL);
             PreparedStatement statement = connection.prepareStatement("UPDATE GOODS SET NAME = ? WHERE ID = ?");
-            statement.setString(1, name);
+            statement.setString(1, newName);
             statement.setInt(2, ID);
             int changeNameResult = statement.executeUpdate();
             connection.close();
@@ -442,18 +458,82 @@ public class DatabaseManager {
         }
     }
 
-    public boolean changeGoodsPrice(int ID, double price) {
+    public boolean changeGoodsManufacturer(int ID, String newManufacturer) {
         try {
             Connection connection = DriverManager.getConnection(DB_URL);
-            PreparedStatement statement = connection.prepareStatement("UPDATE GOODS SET PRICE = ? WHERE ID = ?");
-            statement.setDouble(1, price);
+            PreparedStatement statement = connection.prepareStatement("UPDATE GOODS SET MANUFACTURER = ?WHERE ID = ?");
+            statement.setString(1, newManufacturer);
             statement.setInt(2, ID);
-            int changeNameResult = statement.executeUpdate();
+            int updataResult = statement.executeUpdate();
             connection.close();
-            if(changeNameResult == 0) return false;
-            else return true;
-        } catch (SQLException e) {
-            System.out.println("Failed to change goods price: " + e.getMessage());
+            if(updataResult != 0) return true;
+            else return false;
+        } catch (Exception e) {
+            System.out.println("Failed to change goods manufacturer: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean changeGoodsManufactureData(int ID, String newManufactureData) {
+        try {
+            Connection connection = DriverManager.getConnection(DB_URL);
+            PreparedStatement statement = connection.prepareStatement("UPDATA GOODS SET MANUFACTUREDATA = ? WHERE ID = ?");
+            statement.setString(1, newManufactureData);
+            statement.setInt(2, ID);
+            int updataResult = statement.executeUpdate();
+            connection.close();
+            if(updataResult != 0) return true;
+            else return false;
+        } catch (Exception e) {
+            System.out.println("Failed to change goods manufacture data: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean changeGoodsModel(int ID, String newModel) {
+        try {
+            Connection connection = DriverManager.getConnection(DB_URL);
+            PreparedStatement statement = connection.prepareStatement("UPDATA GOODS SET MODEL = ? WHERE ID = ?");
+            statement.setString(1, newModel);
+            statement.setInt(2, ID);
+            int updataResult = statement.executeUpdate();;
+            connection.close();
+            if(updataResult != 0) return true;
+            else return false;
+        } catch (Exception e) {
+            System.out.println("Failed to change goods model: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean changeGoodsRestockingPrice(int ID, double newRestockingPrice) {
+        try {
+            Connection connection = DriverManager.getConnection(DB_URL);
+            PreparedStatement statement = connection.prepareStatement("UPDADA GOODS SET RESTOCKINGPRICE = ? WHERE ID = ?");
+            statement.setDouble(1, newRestockingPrice);
+            statement.setInt(2, ID);
+            int updataResult = statement.executeUpdate();
+            connection.close();
+            if(updataResult != 0) return true;
+            else return false;
+        } catch (Exception e) {
+            System.out.println("Failed to change goods restocking price: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean changeGoodsRetailPrice(int ID, double newRetailPrice) {
+        try {
+            Connection connection = DriverManager.getConnection(DB_URL);
+            PreparedStatement statement = connection.prepareStatement("UPDATA GOODS SET RETAILPRICE = ? WHERE ID = ?");
+            statement.setDouble(1, newRetailPrice);
+            statement.setInt(2, ID);
+            int updataResult = statement.executeUpdate();
+            connection.close();
+            if(updataResult != 0) return true;
+            else return false;
+        } catch (Exception e) {
+            System.out.println("Failed to change goods retail price: " + e.getMessage());
             return false;
         }
     }
