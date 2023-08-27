@@ -19,7 +19,9 @@ public class Shop {
         boolean runFlag = true;
         String userInput = "";
         while(runFlag) {
-            System.out.println("购物");
+            System.out.println("\n\n*******************************************");
+            System.out.println("***************购物管理系统****************");
+            System.out.println("*******************购物*******************");
             if(databaseManager.userShoppingCartEmpty(User.getUserAccount())) {
                 System.out.println("购物车");
                 databaseManager.showUserShoppingCart(User.getUserAccount());

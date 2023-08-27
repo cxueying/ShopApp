@@ -16,6 +16,9 @@ public class UserRegister{
         boolean runFlag = true;
 
         while (runFlag) {
+            System.out.println("\n\n*******************************************");
+            System.out.println("***************购物管理系统****************");
+            System.out.println("*******************注册********************");
             System.out.print("请输入用户名:");
             String username = this.scanner.nextLine();
 

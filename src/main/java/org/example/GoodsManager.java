@@ -21,7 +21,9 @@ public class GoodsManager {
         boolean runFlag = true;
         int userInput = -1;
         while(runFlag) {
-            System.out.println("商品管理");
+            System.out.println("\n\n*******************************************");
+            System.out.println("***************购物管理系统****************");
+            System.out.println("*****************商品管理******************");
             System.out.println("1、列出所有商品信息");
             System.out.println("2、添加商品");
             System.out.println("3、修改商品信息");

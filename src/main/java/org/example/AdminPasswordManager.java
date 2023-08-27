@@ -21,7 +21,9 @@ public class AdminPasswordManager {
         String adminInput = "";
         boolean runFlag = true;
         while(runFlag) {
-            System.out.println("密码管理");
+            System.out.println("\n\n*******************************************");
+            System.out.println("***************购物管理系统****************");
+            System.out.println("*****************密码管理******************");
             System.out.println("请选择操作");
             System.out.println("1、修改密码");
             System.out.println("2、重置用户密码");
