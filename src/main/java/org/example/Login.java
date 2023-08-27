@@ -36,13 +36,15 @@ public class Login {
             
             boolean success = false;
             if(identity.equals("user")) {
-                success = databaseManager.userLogin(account, password);
-                if(success) {
-                    User.setUserAccount(account);
-                    User.setUserState(true);
-                    databaseManager.passwordWrongTimesReset(account);
-                } else {
-                    if(databaseManager.findUser(account)) databaseManager.wrongPassword(account);
+                if(databaseManager.findUser(account)) {
+                    success = databaseManager.userLogin(account, password);
+                    if(success) {
+                        User.setUserAccount(account);
+                        User.setUserState(true);
+                        databaseManager.passwordWrongTimesReset(account);
+                    } else {
+                        databaseManager.wrongPassword(account);
+                    }
                 }
             }else{
                 success = databaseManager.adminLogin(account, password);
@@ -54,9 +56,9 @@ public class Login {
             if(success){
                 System.out.println("登录成功");
                 return true;
-            }else {
+            } else {
                 System.out.println("登录失败！！！");
-                if(databaseManager.passwordWrongTimes(account) >= 5) {
+                if(databaseManager.findUser(account) && databaseManager.passwordWrongTimes(account) >= 5 && identity.equals("user")) {
                     System.out.println("输入密码错误过多，该账户已上锁，请重置密码");
                     databaseManager.lockUser(account);
                 }

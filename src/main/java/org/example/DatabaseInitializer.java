@@ -21,7 +21,7 @@ public class DatabaseInitializer {
                                       "PHONENUMBER         INTERGER NOT NULL," +
                                       "EMAIL               TEXT     NOT NULL," + 
                                       "PASSWORD            TEXT     NOT NULL," +
-                                      "PASSWORDWRONGTIMES  INTERGER NOTNULL," +
+                                      "PASSWORDWRONGTIMES  INTERGER NOT NULL," +
                                       "STATE               TEXT     NOT NULL)" ;
             statement.executeUpdate(createTableQuery);//创建USER表
 
@@ -46,7 +46,7 @@ public class DatabaseInitializer {
                                "(USERACCOUNT        TEXT KEY NOT NULL," +
                                "ID                  INTEGER  NOT NULL," +
                                "GOODSNAME           TEXT     NOT NULL," +
-                               "RETAILPRICE         REAL     NOT NULL," +
+                               "PRICE               REAL     NOT NULL," +
                                "QUANTITY            INTEGER  NOT NULL)" ;
             statement.executeUpdate(createTableQuery);//创建SHOPPINGCART表
 

@@ -30,7 +30,7 @@ public class UserRegister{
                 System.out.println("请重新输入");
             }
 
-            System.out.print("请输入密码:");
+            System.out.println("请输入密码:");
             String password = "";
             while(true) {
                 System.out.print("->");
@@ -64,6 +64,8 @@ public class UserRegister{
             
             if(success){
                 System.out.println("注册成功");
+                System.out.print("键入Enter键继续");
+                scanner.nextLine();
                 break;
             }else{
                 System.out.println("该用户已经存在");

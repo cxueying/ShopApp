@@ -45,7 +45,7 @@ public class UserPasswordManager {
         System.out.println("原密码");
         System.out.print("->");
         String oldPassword = scanner.nextLine();
-        System.out.print("新密码：");
+        System.out.println("新密码");
         String newPassword = "";
         while(true) {
             System.out.print("->");
@@ -81,18 +81,32 @@ public class UserPasswordManager {
                 userAccount = scanner.nextLine();
             }
             if(databaseManager.findUser(userAccount)) {
-                String newPassword = databaseManager.userPasswordReset(userAccount);
-                if(!newPassword.equals("error") && !newPassword.equals("fail")) {
-                    if(sendNewPasswordToUserEmail(userAccount, newPassword)) {
-                        System.out.println("密码重置成功，新密码已发送至用户邮箱");
-                    }else {
-                        System.out.println("密码重置失败");
-                    }
-                } else {
-                    System.out.println("发生错误，操作失败");
+                System.out.println("是否重置密码(Y/N)");
+                String userInput = "";
+                while(true) {
+                    System.out.print("->");
+                    userInput = scanner.nextLine();
+                    if(userInput.equals("y") || userInput.equals("Y") || userInput.equals("n") || userInput.equals("N")) break;
+                    System.out.println("输入错误，请重新输入");
                 }
-                runFlag = false;
-                System.out.println("键入Enter键继续");
+
+                if(userInput.equals("y") || userInput.equals("Y")) {
+                    String newPassword = databaseManager.userPasswordReset(userAccount);
+                    if(!newPassword.equals("error") && !newPassword.equals("fail")) {
+                        if(sendNewPasswordToUserEmail(userAccount, newPassword)) {
+                            System.out.println("密码重置成功，新密码已发送至用户邮箱");
+                        }else {
+                            System.out.println("密码重置失败");
+                        }
+                    } else {
+                        System.out.println("发生错误，操作失败");
+                    }
+                    runFlag = false;
+                } else {
+                    System.out.println("操作取消");
+                    runFlag = false;
+                }
+                System.out.print("键入Enter键继续");
                 scanner.nextLine();
             } else {
                 System.out.println("重置密码失败，请检查用户名是否正确");

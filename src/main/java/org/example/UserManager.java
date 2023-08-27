@@ -53,7 +53,7 @@ public class UserManager {
             System.out.print("请输入用户名：");
             username = scanner.nextLine();
             if(databaseManager.findUser(username)){
-                databaseManager.showUserInfo(username);
+                //databaseManager.showUserInfo(username);
                 System.out.println("该操作不可逆，是否要删除该用户信息（Y/N）?");
                 while(true) {
                     System.out.print("->");

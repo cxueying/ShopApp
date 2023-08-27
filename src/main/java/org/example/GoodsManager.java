@@ -51,6 +51,8 @@ public class GoodsManager {
     private void showAllGoodsInfo() {
         System.out.println("商品信息");
         databaseManager.showAllGoods();
+        System.out.print("键入Enter键继续");
+        scanner.nextLine();
     }
 
     private void addGoods() {
@@ -147,7 +149,7 @@ public class GoodsManager {
                     int choice = scanner.nextInt();
                     scanner.nextLine();
                     switch(choice) {
-                        case 1 : changeGoodsID(ID); break;
+                        case 1 : ID = changeGoodsID(ID); break;
                         case 2 : changeGoodsName(ID); break;
                         case 3 : changeGoodsManufacturer(ID); break;
                         case 4 : changeGoodsManufactureData(ID); break;
@@ -179,7 +181,7 @@ public class GoodsManager {
         }
     }
 
-    private void changeGoodsID(int ID) {
+    private int changeGoodsID(int ID) {
         System.out.print("请输入修改后的商品编号：");
         while(!scanner.hasNextInt()) scanner.next();
         int newID = scanner.nextInt();
@@ -209,6 +211,8 @@ public class GoodsManager {
                 System.out.println("输入有误，请重新输入");
             }
         }
+
+        return newID;
     }
 
     private void changeGoodsName(int ID) {
@@ -397,9 +401,14 @@ public class GoodsManager {
 
     private void changeGoodsQuantity(int ID) {
         System.out.print("请输入修改后的商品数量：");
-        while(!scanner.hasNextInt()) scanner.next();
-        int newQuantity = scanner.nextInt();
-        scanner.nextLine();
+        int newQuantity = 0;
+        while(true) {
+            while(!scanner.hasNextInt()) scanner.next();
+            newQuantity = scanner.nextInt();
+            scanner.nextLine();
+            if(newQuantity >= 0) break;
+            System.out.println("数量不能为负数！");
+        }
 
         System.out.println("修改后的商品数量为：" + newQuantity);
         System.out.println("是否修改(Y/N)");

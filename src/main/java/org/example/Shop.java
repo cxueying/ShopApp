@@ -13,6 +13,8 @@ public class Shop {
     public void run() {
         if(User.getUserState() == false) {
             System.out.println("当前状态未登录，请先登录");
+            System.out.println("键入Enter键继续");
+            scanner.nextLine();
             return;
         }
 
@@ -26,7 +28,7 @@ public class Shop {
                 System.out.println("购物车");
                 databaseManager.showUserShoppingCart(User.getUserAccount());
             }
-            System.out.println("1、将商品加入购物车");
+            System.out.println("\n1、将商品加入购物车");
             System.out.println("2、从购物车中移除商品");
             System.out.println("3、修改购物车中的商品");
             System.out.println("4、结账");
@@ -58,7 +60,7 @@ public class Shop {
         String userInput = "";
         boolean runFlag = true;
         while(runFlag) {
-            System.out.print("请选择要添加商品ID：");
+            System.out.print("请选择要添加商品的编号：");
             while(!scanner.hasNextInt()) scanner.next();
             int ID = scanner.nextInt();
             scanner.nextLine();
@@ -192,17 +194,18 @@ public class Shop {
                             int newQuantity = scanner.nextInt();
                             scanner.nextLine();
 
-                            if(databaseManager.changeUserGoodsQuantity(ID, User.getUserAccount(), newQuantity)) {
+                            if(newQuantity <= 0) {
+                                databaseManager.deleteUserGoodFromCart(ID, User.getUserAccount());
                                 System.out.println("修改成功");
-                                System.out.print("键入Enter键继续");
-                                scanner.nextLine();
-                                
-
                             } else {
-                                System.out.println("修改失败");
-                                System.out.print("键入Enter键继续");
-                                scanner.nextLine();
+                                if(databaseManager.changeUserGoodsQuantity(ID, User.getUserAccount(), newQuantity)) {
+                                    System.out.println("修改成功");
+                                } else {
+                                    System.out.println("修改失败");
+                                }
                             }
+                            System.out.print("键入Enter键继续");
+                            scanner.nextLine();
                             run2Flag = false;
                             runFlag = false;
                             break;
@@ -240,18 +243,46 @@ public class Shop {
     }
 
     private void checkout() {
-        double price = databaseManager.checkout(User.getUserAccount());
-        if(price == -2) {
-            System.out.println("商品库存不足，结账失败");
-            System.out.print("键入Enter键继续");
-            scanner.nextLine();
-        } else {
-            System.out.println("总价格：" + price);
-            System.out.println("交易成功");
-            System.out.print("键入Enter键继续");
-            scanner.nextLine();
+        System.out.println("是否购买购物车中的商品(Y/N)");
+        String userInput = "";
+        while(true) {
+            System.out.print("->");
+            userInput = scanner.nextLine();
+            if(userInput.equals("n") || userInput.equals("N") || userInput.equals("y") || userInput.equals("Y")) break;
+            System.out.println("输入错误，请重新输入");
         }
-        
+        if(userInput.equals("y") || userInput.equals("Y")) {
+            double price = databaseManager.checkout(User.getUserAccount());
+            if(price == -2) {
+                System.out.println("商品库存不足，结账失败");
+                System.out.print("键入Enter键继续");
+                scanner.nextLine();
+            } else {
+                System.out.println("总价格：" + price);
+                System.out.println("请选择支付方式：");
+                System.out.println("1、支付宝");
+                System.out.println("2、微信");
+                System.out.println("3、银行卡");
+                String choice = "";
+
+                boolean runFalg = true;
+                while(runFalg) {
+                    System.out.print("->");
+                    choice = scanner.nextLine();
+                    switch(choice) {
+                        case "1" : System.out.println("正在跳转至支付宝支付"); runFalg = false; break;
+                        case "2" : System.out.println("正在跳转至微信支付"); runFalg = false; break;
+                        case "3" : System.out.println("正在跳转至银行卡支付"); runFalg = false; break;
+                        default  : System.out.println("输入错误，请重新输入"); break;
+                    }
+                }
+            }
+            System.out.println("交易成功");
+        } else {
+            System.out.println("交易取消");
+        }
+        System.out.print("键入Enter键继续");
+        scanner.nextLine();
     }
 
     private void inquirePurchaseHistory() {

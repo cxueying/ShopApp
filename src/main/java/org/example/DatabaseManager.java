@@ -79,7 +79,7 @@ public class DatabaseManager {
     public boolean wrongPassword(String userAccount) {
         try {
             Connection connection = DriverManager.getConnection(DB_URL);
-            PreparedStatement statement = connection.prepareStatement("UPDATE USER SET PASSWORDWRONGTIME = ((SELECT PASSWORDWRONGTIME FROM USER WHERE USERACCOUNT = ?) + 1) WHERE USERACCOUNT = ?");
+            PreparedStatement statement = connection.prepareStatement("UPDATE USER SET PASSWORDWRONGTIMES = ((SELECT PASSWORDWRONGTIMES FROM USER WHERE USERACCOUNT = ?) + 1) WHERE USERACCOUNT = ?");
             statement.setString(1, userAccount);
             statement.setString(2,userAccount);
             int updateResult = statement.executeUpdate();
@@ -99,8 +99,9 @@ public class DatabaseManager {
             statement.setString(1, userAccount);
             ResultSet resultSet = statement.executeQuery();
             if(resultSet.next()) {
+                int wrongTimes = resultSet.getInt("PASSWORDWRONGTIMES");
                 connection.close();
-                return resultSet.getInt("PASSWORDWRONGTIMES");
+                return wrongTimes;
             }else {
                 connection.close();
                 return -1;
@@ -244,7 +245,7 @@ public class DatabaseManager {
             ResultSet resultSet = statement.executeQuery();
             if(resultSet.next()){
                 System.out.printf("%5s\t%12s\t%8s\t%18s\t%9s\t%13s\t%18s\n", "ID", "用户名", "用户级别", "注册时间", "累计消费", "手机号", "邮箱");
-                System.out.printf("%5d\t%12s\t%8s\t%18s\t%9d\t%13s\t%18s\n", 
+                System.out.printf("%5d\t%12s\t%8s\t%18s\t%9.2f\t%13s\t%18s\n", 
                     resultSet.getInt("ID"),
                     resultSet.getString("USERACCOUNT"),
                     resultSet.getString("LEVEL"),
@@ -273,7 +274,7 @@ public class DatabaseManager {
             
             System.out.printf("%5s\t%12s\t%8s\t%18s\t%9s\t%13s\t%18s\n", "ID", "用户名", "用户级别", "注册时间", "累计消费", "手机号", "邮箱");
             while(resultSet.next()) {
-                System.out.printf("%5d\t%12s\t%8s\t%18s\t%9d\t%13s\t%18s\n", 
+                System.out.printf("%5d\t%12s\t%8s\t%18s\t%9.2f\t%13s\t%18s\n", 
                     resultSet.getInt("ID"),
                     resultSet.getString("USERACCOUNT"),
                     resultSet.getString("LEVEL"),
@@ -754,7 +755,7 @@ public class DatabaseManager {
                     statement2.setString(1, userAccount);
                     statement2.setInt(2,id);
                     statement2.setString(3, resultSet.getString("NAME"));
-                    statement2.setDouble(4, resultSet.getDouble("PRICE"));
+                    statement2.setDouble(4, resultSet.getDouble("RETAILPRICE"));
                     statement2.setInt(5, quantity);
                     statement2.executeUpdate();
                     connection.close();
@@ -899,6 +900,11 @@ public class DatabaseManager {
                     deleteStatement.setInt(1, cartResultSet.getInt("ID"));
                     deleteStatement.executeUpdate();
                 }
+                PreparedStatement addPriceTotalCostStatement = connection.prepareStatement("UPDATE USER SET TOTALCOST = ((SELECT TOTALCOST FROM USER WHERE USERACCOUNT = ?) + ?) WHERE USERACCOUNT = ?");
+                addPriceTotalCostStatement.setDouble(2, price);
+                addPriceTotalCostStatement.setString(1, userAccount);
+                addPriceTotalCostStatement.setString(3, userAccount);
+                addPriceTotalCostStatement.executeUpdate();
             }
             connection.close();
             return price;
@@ -933,7 +939,7 @@ public class DatabaseManager {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM SHOPHISTORY WHERE USERACCOUNT = ?");
             statement.setString(1, userAccount);
             ResultSet resultSet = statement.executeQuery();
-            System.out.printf("%-5s %-18s %-8s    %-8s       %-4s\n", "ID", "GoodsName", "Quantity", "Price", "Time");
+            System.out.printf("%-5s %-18s %-8s    %-8s       %-4s\n", "编号", "商品名称", "数量", "价格", "时间");
             while(resultSet.next()) {
                 System.out.printf("%-5d %-18s %-8d    %-8.2f %-18s\n", 
                     resultSet.getInt("ID"),
