@@ -20,12 +20,13 @@ public class UserRegister{
             System.out.println("***************购物管理系统****************");
             System.out.println("*******************注册********************");
             System.out.print("请输入用户名:");
-            String username = this.scanner.nextLine();
+            while(!scanner.hasNext("([^ ]+){5,}")) scanner.next();
+            String userAccount = scanner.next("([^ ]+){5,}");
 
             System.out.print("请输入密码:");
             String password = this.scanner.nextLine();
 
-            boolean success = this.userManager.userRegister(username, password);
+            boolean success = this.userManager.userRegister(userAccount, password);
             
             if(success){
                 System.out.println("注册成功");
