@@ -18,7 +18,9 @@ public class Main {
 
         boolean mainRunFlag = true;
         while(mainRunFlag){
-            System.out.println("购物管理系统");
+            System.out.println("\n\n*******************************************");
+            System.out.println("***************购物管理系统****************");
+            System.out.println("*******************************************");
             System.out.println("请选择你的身份");
             System.out.println("1、管理员");
             System.out.println("2、用户");

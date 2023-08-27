@@ -13,6 +13,9 @@ public class Login {
     }
 
     public boolean run(String identity) {
+        System.out.println("\n\n*******************************************");
+        System.out.println("***************购物管理系统****************");
+        System.out.println("*******************登录********************");
         if(User.getUserState() == true || Admin.getAdminState() == true) {
             System.out.println("当前已登录，请先退出登录");
             System.out.print("键入Enter键继续");

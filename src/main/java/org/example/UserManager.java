@@ -21,7 +21,9 @@ public class UserManager {
         boolean runFlag = true;
         String adminInput = "";
         while(runFlag) {
-            System.out.println("客户管理");
+            System.out.println("\n\n*******************************************");
+            System.out.println("***************购物管理系统****************");
+            System.out.println("*****************客户管理******************");
             System.out.println("1、列出所有客户信息");
             System.out.println("2、删除客户信息");
             System.out.println("3、查询客户信息");
