@@ -17,7 +17,6 @@ public class User{
         String userInput = "";
         boolean runFlag = true;
         while(runFlag){
-            //databaseManager.showAllUser();//********************** */
             System.out.println("\n\n*******************************************");
             System.out.println("***************购物管理系统****************");
             System.out.println("*******************************************");

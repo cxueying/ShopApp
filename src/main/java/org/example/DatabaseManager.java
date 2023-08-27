@@ -320,11 +320,11 @@ public class DatabaseManager {
             Connection connection = DriverManager.getConnection(DB_URL);
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM GOODS");
             ResultSet resultSet = statement.executeQuery();
-            System.out.printf("%12s\t%15s\t%15s\t%18s\t%18s\t%8s\t%8s\t%78s\n", 
-                " 编号", "名称", "生产厂家", "生产日期", "型号", "进货价", "零售价格", "数量"
+            System.out.printf("%-12s%-12s  %-12s  %-10s  %-12s  %-8s  %-8s  %-8s\n", 
+                "编号", "名称", "生产厂家", "生产日期", "型号", "进货价", "零售价格", "数量"
             );
             while(resultSet.next()) {
-                System.out.printf("%12s\t%15s\t%15s\t%18s\t%18s\t%8s\t%8s\t%78s\n", 
+                System.out.printf("%-12d  %-12s  %-12s  %-10s  %-12s  %8.2f  %8.2f  %8d\n", 
                     resultSet.getInt("ID"),
                     resultSet.getString("NAME"),
                     resultSet.getString("MANUFACTURER"),
@@ -392,11 +392,18 @@ public class DatabaseManager {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM GOODS WHERE ID = ?");
             statement.setInt(1, ID);
             ResultSet resultSet = statement.executeQuery();
+            System.out.printf("%-12s%-12s  %-12s  %-10s  %-12s  %-8s  %-8s  %-8s\n", 
+                "编号", "名称", "生产厂家", "生产日期", "型号", "进货价", "零售价格", "数量"
+            );
             if(resultSet.next()) {
-                System.out.printf("ID = %d\tNAME = %s\tPRICE = %.2f\tQUANTITY = %d\n", 
+                System.out.printf("%-12d  %-12s  %-12s  %-10s  %-12s  %-8.2f  %-8.2f  %-8d\n", 
                     resultSet.getInt("ID"),
                     resultSet.getString("NAME"),
-                    resultSet.getDouble("PRICE"),
+                    resultSet.getString("MANUFACTURER"),
+                    resultSet.getString("MANUFACTUREDATA"),
+                    resultSet.getString("MODEL"),
+                    resultSet.getDouble("RESTOCKINGPRICE"),
+                    resultSet.getDouble("RETAILPRICE"),
                     resultSet.getInt("QUANTITY")
                 );
                 connection.close();
@@ -477,7 +484,7 @@ public class DatabaseManager {
     public boolean changeGoodsManufactureData(int ID, String newManufactureData) {
         try {
             Connection connection = DriverManager.getConnection(DB_URL);
-            PreparedStatement statement = connection.prepareStatement("UPDATA GOODS SET MANUFACTUREDATA = ? WHERE ID = ?");
+            PreparedStatement statement = connection.prepareStatement("UPDATE GOODS SET MANUFACTUREDATA = ? WHERE ID = ?");
             statement.setString(1, newManufactureData);
             statement.setInt(2, ID);
             int updataResult = statement.executeUpdate();
@@ -493,7 +500,7 @@ public class DatabaseManager {
     public boolean changeGoodsModel(int ID, String newModel) {
         try {
             Connection connection = DriverManager.getConnection(DB_URL);
-            PreparedStatement statement = connection.prepareStatement("UPDATA GOODS SET MODEL = ? WHERE ID = ?");
+            PreparedStatement statement = connection.prepareStatement("UPDATE GOODS SET MODEL = ? WHERE ID = ?");
             statement.setString(1, newModel);
             statement.setInt(2, ID);
             int updataResult = statement.executeUpdate();;
@@ -509,7 +516,7 @@ public class DatabaseManager {
     public boolean changeGoodsRestockingPrice(int ID, double newRestockingPrice) {
         try {
             Connection connection = DriverManager.getConnection(DB_URL);
-            PreparedStatement statement = connection.prepareStatement("UPDADA GOODS SET RESTOCKINGPRICE = ? WHERE ID = ?");
+            PreparedStatement statement = connection.prepareStatement("UPDATE GOODS SET RESTOCKINGPRICE = ? WHERE ID = ?");
             statement.setDouble(1, newRestockingPrice);
             statement.setInt(2, ID);
             int updataResult = statement.executeUpdate();
@@ -525,7 +532,7 @@ public class DatabaseManager {
     public boolean changeGoodsRetailPrice(int ID, double newRetailPrice) {
         try {
             Connection connection = DriverManager.getConnection(DB_URL);
-            PreparedStatement statement = connection.prepareStatement("UPDATA GOODS SET RETAILPRICE = ? WHERE ID = ?");
+            PreparedStatement statement = connection.prepareStatement("UPDATE GOODS SET RETAILPRICE = ? WHERE ID = ?");
             statement.setDouble(1, newRetailPrice);
             statement.setInt(2, ID);
             int updataResult = statement.executeUpdate();
@@ -550,6 +557,108 @@ public class DatabaseManager {
             else return true;
         } catch (SQLException e) {
             System.out.println("Failed to change goods name: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean inquireGoodsInfoByName(String name) {
+        try {
+            Connection connection = DriverManager.getConnection(DB_URL);
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM GOODS WHERE NAME = ?");
+            statement.setString(1, name);
+            ResultSet resultSet = statement.executeQuery();
+            boolean findResult = false;
+            boolean firstPrint = true;
+            while(resultSet.next()) {
+                findResult = true;
+                if(firstPrint) {
+                    System.out.printf("%12s\t%12s\t%12s\t%12s\t%12s\t%8s\t%8s\t%8s\n", 
+                        " 编号", "名称", "生产厂家", "生产日期", "型号", "进货价", "零售价格", "数量"
+                    );
+                    firstPrint = false;
+                }
+                System.out.printf("%12s\t%12s\t%12s\t%12s\t%12s\t%8s\t%8s\t%8s\n", 
+                    resultSet.getInt("ID"),
+                    resultSet.getString("NAME"),
+                    resultSet.getString("MANUFACTURER"),
+                    resultSet.getString("MANUFACTUREDATA"),
+                    resultSet.getString("MODEL"),
+                    resultSet.getDouble("RESTOCKINGPRICE"),
+                    resultSet.getDouble("RETAILPRICE"),
+                    resultSet.getInt("QUANTITY")
+                );
+            }
+            return findResult;
+        } catch (Exception e) {
+            System.out.println("Failed to inquire goods info by name: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean inquireGoodsInfoByManufacturer(String manufacturer) {
+        try {
+            Connection connection = DriverManager.getConnection(DB_URL);
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM GOODS WHERE MANUFACTURER = ?");
+            statement.setString(1, manufacturer);
+            ResultSet resultSet = statement.executeQuery();
+            boolean findResult = false;
+            boolean firstPrint = true;
+            while(resultSet.next()) {
+                findResult = true;
+                if(firstPrint) {
+                    System.out.printf("%12s\t%12s\t%12s\t%12s\t%12s\t%8s\t%8s\t%8s\n", 
+                        " 编号", "名称", "生产厂家", "生产日期", "型号", "进货价", "零售价格", "数量"
+                    );
+                    firstPrint = false;
+                }
+                System.out.printf("%12s\t%12s\t%12s\t%12s\t%12s\t%2s\t%8s\t%8s\n", 
+                    resultSet.getInt("ID"),
+                    resultSet.getString("NAME"),
+                    resultSet.getString("MANUFACTURER"),
+                    resultSet.getString("MANUFACTUREDATA"),
+                    resultSet.getString("MODEL"),
+                    resultSet.getDouble("RESTOCKINGPRICE"),
+                    resultSet.getDouble("RETAILPRICE"),
+                    resultSet.getInt("QUANTITY")
+                );
+            }
+            return findResult;
+        } catch (Exception e) {
+            System.out.println("Failed to inquire goods info by name: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean inquireGoodsInfoByRetailPriceO(double retailPrice) {
+        try {
+            Connection connection = DriverManager.getConnection(DB_URL);
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM GOODS WHERE RETAILPRICE > ?");
+            statement.setDouble(1, retailPrice);
+            ResultSet resultSet = statement.executeQuery();
+            boolean findResult = false;
+            boolean firstPrint = true;
+            while(resultSet.next()) {
+                findResult = true;
+                if(firstPrint) {
+                    System.out.printf("%12s\t%12s\t%12s\t%12s\t%12s\t%8s\t%8s\t%8s\n", 
+                        " 编号", "名称", "生产厂家", "生产日期", "型号", "进货价", "零售价格", "数量"
+                    );
+                    firstPrint = false;
+                }
+                System.out.printf("%12s\t%12s\t%12s\t%12s\t%12s\t%8s\t%8s\t%8s\n", 
+                    resultSet.getInt("ID"),
+                    resultSet.getString("NAME"),
+                    resultSet.getString("MANUFACTURER"),
+                    resultSet.getString("MANUFACTUREDATA"),
+                    resultSet.getString("MODEL"),
+                    resultSet.getDouble("RESTOCKINGPRICE"),
+                    resultSet.getDouble("RETAILPRICE"),
+                    resultSet.getInt("QUANTITY")
+                );
+            }
+            return findResult;
+        } catch (Exception e) {
+            System.out.println("Failed to inquire goods info by name: " + e.getMessage());
             return false;
         }
     }
