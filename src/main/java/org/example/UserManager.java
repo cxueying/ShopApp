@@ -54,7 +54,7 @@ public class UserManager {
             username = scanner.nextLine();
             if(databaseManager.findUser(username)){
                 databaseManager.showUserInfo(username);
-                System.out.println("是否要删除该用户信息（Y/N）?");
+                System.out.println("该操作不可逆，是否要删除该用户信息（Y/N）?");
                 while(true) {
                     System.out.print("->");
                     adminInput = scanner.nextLine();
@@ -105,10 +105,6 @@ public class UserManager {
     }
 
     private void inquireUserInfo(){
-        // System.out.print("请输入用户名：");
-        // String username = scanner.nextLine();
-        // if(databaseManager.showUserInfo(username));
-        // else System.out.println("查询失败，该用户不存在！");
         
         String username = "";
         String adminInput = "";

@@ -56,20 +56,49 @@ public class GoodsManager {
     private void addGoodsInfo() {
         boolean runFlag = true;
         String adminInput = "";
+        int ID = -1;
         String name = "";
-        double price = -1.0;
-        int quantity = -1;
+        String manufacturer = "";
+        String manufactureData = "";
+        String model = "";
+        double restockingPrice = 0.0;
+        double retailPrice = 0.0;
+        int quantity = 0;
         while(runFlag) {
-            System.out.println("添加商品信息");
+            System.out.println("添加商品");
+            System.out.print("商品编号：");
+            while(!scanner.hasNextInt()) scanner.next();
+            ID = scanner.nextInt();
+            scanner.nextLine();
+
             System.out.print("商品名称：");
             name = scanner.nextLine();
-            System.out.print("商品价格：");
+
+            System.out.print("生产厂家：");
+            manufacturer = scanner.nextLine();
+
+            System.out.print("生产日期：");
+            manufactureData = scanner.nextLine();
+
+            System.out.print("型号：");
+            model = scanner.nextLine();
+
+            System.out.print("进货价：");
             while(!scanner.hasNextDouble()) scanner.next();
-            price = scanner.nextDouble();
-            System.out.print("商品数量：");
+            restockingPrice = scanner.nextDouble();
+            scanner.nextLine();
+
+            System.out.print("零售价：");
+            while(!scanner.hasNextDouble()) scanner.next();
+            retailPrice = scanner.nextDouble();
+            scanner.nextLine();
+
+            System.out.print("数量：");
             while(!scanner.hasNextInt()) scanner.next();
             quantity = scanner.nextInt();
-            boolean success = databaseManager.addGoods(name, price, quantity);
+            scanner.nextLine();
+
+            boolean success = databaseManager.addGoods(ID,name,manufacturer,manufactureData,model,restockingPrice,retailPrice,quantity);
             if(success) System.out.println("添加商品成功");
             else System.out.println("添加商品失败");
             System.out.println("是否继续添加商品(Y/N)");
@@ -81,6 +110,9 @@ public class GoodsManager {
                 if(adminInput.equals("y") || adminInput.equals("Y")) {
                     break;
                 } else if(adminInput.equals("n") || adminInput.equals("N")) {
+                    System.out.println("操作结束");
+                    System.out.print("键入Enter键继续");
+                    scanner.nextLine();
                     runFlag = false;
                     break;
                 } else {

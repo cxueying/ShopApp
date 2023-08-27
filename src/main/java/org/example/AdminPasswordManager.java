@@ -130,25 +130,6 @@ public class AdminPasswordManager {
                     }
                 }
             }
-            // boolean success = databaseManager.userPasswordReset(username);
-            // if(success) {
-            //     System.out.println("用户密码重置成功！");
-            //     System.out.print("键入Enter继续");
-            //     scanner.nextLine();
-            //     runFlag = false;
-            // }else {
-            //     System.out.println("该用户不存在，是否继续（Y/N）？");
-            //     System.out.print("->");
-            //     String adminInput = scanner.nextLine();
-            //     if(adminInput.equals("y") || adminInput.equals("Y")){
-            //         continue;
-            //     }else {
-            //         System.out.println("操作取消");
-            //         System.out.print("键入Enter继续");
-            //         scanner.nextLine();
-            //         runFlag = false;
-            //     }
-            // }
         }
     }
 

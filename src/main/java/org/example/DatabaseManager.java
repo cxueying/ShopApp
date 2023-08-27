@@ -18,7 +18,6 @@ import java.security.NoSuchAlgorithmException;
 
 public class DatabaseManager {
     private static int userID = 1;
-    private static int goodsID = 1;
     
 
     private static final String DB_URL = "jdbc:sqlite:dataBase.db";
@@ -164,15 +163,6 @@ public class DatabaseManager {
                 id = resultSet.getInt("ID");
             }
             userID = ++id;
-
-            id = 0;
-            statement = connection.prepareStatement("SELECT ID FROM GOODS");
-            resultSet = statement.executeQuery();
-            while(resultSet.next()){
-                id = resultSet.getInt("ID");
-            }
-            goodsID = ++id;
-
             connection.close();
         } catch(SQLException e) {
             System.out.println("Failed to updataID" + e.getMessage());
@@ -186,9 +176,16 @@ public class DatabaseManager {
             statement.setString(1, username);
             ResultSet resultSet = statement.executeQuery();
             if(resultSet.next()){
-                System.out.print("ID = " + resultSet.getInt("ID") + "\t");
-                System.out.print("USERACCOUNT = " + resultSet.getString("USERACCOUNT") + "\t");
-                System.out.println("PASSWORD = " + resultSet.getString("PASSWORD"));
+                System.out.printf("%5s\t%12s\t%8s\t%18s\t%9s\t%13s\t%18s\n", "ID", "用户名", "用户级别", "注册时间", "累计消费", "手机号", "邮箱");
+                System.out.printf("%5d\t%12s\t%8s\t%18s\t%9d\t%13s\t%18s\n", 
+                    resultSet.getInt("ID"),
+                    resultSet.getString("USERACCOUNT"),
+                    resultSet.getString("LEVEL"),
+                    resultSet.getString("REGISTERTIME"),
+                    resultSet.getDouble("TOTALCOST"),
+                    resultSet.getString("PHONENUMBER"),
+                    resultSet.getString("EMAIL")
+                );
                 connection.close();
                 return true;
             }else {
@@ -207,10 +204,17 @@ public class DatabaseManager {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM USER");
             ResultSet resultSet = statement.executeQuery();
             
+            System.out.printf("%5s\t%12s\t%8s\t%18s\t%9s\t%13s\t%18s\n", "ID", "用户名", "用户级别", "注册时间", "累计消费", "手机号", "邮箱");
             while(resultSet.next()) {
-                System.out.print("ID = " + resultSet.getInt("ID") + "\t");
-                System.out.print("USERACCOUNT = " + resultSet.getString("USERACCOUNT") + "\t");
-                System.out.println("PASSWORD = " + resultSet.getString("PASSWORD"));
+                System.out.printf("%5d\t%12s\t%8s\t%18s\t%9d\t%13s\t%18s\n", 
+                    resultSet.getInt("ID"),
+                    resultSet.getString("USERACCOUNT"),
+                    resultSet.getString("LEVEL"),
+                    resultSet.getString("REGISTERTIME"),
+                    resultSet.getDouble("TOTALCOST"),
+                    resultSet.getString("PHONENUMBER"),
+                    resultSet.getString("EMAIL")
+                );
             }
             connection.close();
         } catch(SQLException e) {
@@ -224,7 +228,7 @@ public class DatabaseManager {
             PreparedStatement statement = connection.prepareStatement("INSERT INTO ADMIN (ID, ADMINACCOUNT, PASSWORD) VALUES (?, ?, ?)");
             statement.setInt(1, 1);
             statement.setString(2, "admin");
-            statement.setString(3, md5("admin"));
+            statement.setString(3, md5("ynuinfo#777"));
             statement.executeUpdate();
             connection.close();
         }catch(SQLException e) {
@@ -316,14 +320,21 @@ public class DatabaseManager {
             Connection connection = DriverManager.getConnection(DB_URL);
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM GOODS");
             ResultSet resultSet = statement.executeQuery();
-            System.out.printf("%-5s  %-15s     %-8s  %-8s\n", "ID", "NAME", "PRICE", "QUANTITY");
+            System.out.printf("%12s\t%15s\t%15s\t%18s\t%18s\t%8s\t%8s\t%78s\n", 
+                " 编号", "名称", "生产厂家", "生产日期", "型号", "进货价", "零售价格", "数量"
+            );
             while(resultSet.next()) {
-                System.out.printf("%-5d  %-15s  %8.2f    %8d\n", 
+                System.out.printf("%12s\t%15s\t%15s\t%18s\t%18s\t%8s\t%8s\t%78s\n", 
                     resultSet.getInt("ID"),
                     resultSet.getString("NAME"),
-                    resultSet.getDouble("PRICE"),
+                    resultSet.getString("MANUFACTURER"),
+                    resultSet.getString("MANUFACTUREDATA"),
+                    resultSet.getString("MODEL"),
+                    resultSet.getDouble("RESTOCKINGPRICE"),
+                    resultSet.getDouble("RETAILPRICE"),
                     resultSet.getInt("QUANTITY")
                 );
+                
             }
             connection.close();
         } catch (SQLException e) {
@@ -350,14 +361,22 @@ public class DatabaseManager {
         }
     }
 
-    public boolean addGoods(String name, double price, int quantity) {
+    public boolean addGoods(
+        int ID, String name, String manufacturer, 
+        String manufactureData, String model, Double restockingPrice,
+        Double retailPrice, int quantity
+        ) {
         try {
             Connection connection = DriverManager.getConnection(DB_URL);
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO GOODS (ID, NAME, PRICE, QUANTITY) VALUES (?, ?, ?, ?)");
-            statement.setInt(1, goodsID++);
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO GOODS (ID, NAME, MANUFACTURER, MANUFACTUREDATA, MODEL, RESTOCKINGPRICE, RETAILPRICE, QUANTITY) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            statement.setInt(1, ID);
             statement.setString(2, name);
-            statement.setDouble(3, price);
-            statement.setInt(4, quantity);
+            statement.setString(3, manufacturer);
+            statement.setString(4, manufactureData);
+            statement.setString(5, model);
+            statement.setDouble(6, restockingPrice);
+            statement.setDouble(7, retailPrice);
+            statement.setInt(8, quantity);
             statement.executeUpdate();
             connection.close();
             return true;
