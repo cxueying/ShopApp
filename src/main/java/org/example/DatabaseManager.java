@@ -15,6 +15,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import java.util.Random;
+
 
 public class DatabaseManager {
     private static int userID = 1;
@@ -109,6 +111,21 @@ public class DatabaseManager {
         }
     }
 
+    public boolean passwordWrongTimesReset(String userAccount) {
+        try {
+            Connection connection = DriverManager.getConnection(DB_URL);
+            PreparedStatement statement = connection.prepareStatement("UPDATE USER SET PASSWORDWRONGTIMES = 0 WHERE USERACCOUNT = ?");
+            statement.setString(1, userAccount);
+            int updateResult = statement.executeUpdate();
+            connection.close();
+            if(updateResult != 0) return true;
+            else return false;
+        } catch (Exception e) {
+            System.out.println("Failed to reset password wrong times: " + e.getMessage());
+            return false;
+        }
+    }
+
     public boolean lockUser(String userAccount) {
         try {
             Connection connection = DriverManager.getConnection(DB_URL);
@@ -184,38 +201,24 @@ public class DatabaseManager {
         }
     }
 
-    public boolean userPasswordReset(String username) {
+    public String userPasswordReset(String userAccount) {
+        String newPassword = getRandomPassword(10);
         try {
             Connection connection = DriverManager.getConnection(DB_URL);
-            PreparedStatement statement = connection.prepareStatement("UPDATE USER SET PASSWORD = DEFAULTPASSWORD WHERE USERACCOUNT = ?");
-            statement.setString(1, username);
-            if(statement.executeUpdate() != 0) {
-                connection.close();
-                return true;
-            }else return false;
-        }catch(SQLException e) {
-            System.out.println("Failed to reset password: " + e.getMessage());
-            return false;
+            PreparedStatement statement = connection.prepareStatement("UPDATE USER SET PASSWORD = ? WHERE USERACCOUNT = ?");
+            statement.setString(1, md5(newPassword));
+            statement.setString(2, userAccount);
+            int updateResult = statement.executeUpdate();
+            connection.close();
+            if(updateResult != 0) return newPassword;
+            else return "fail";
+        } catch (Exception e) {
+            System.out.println("Failed to reset user password: " + e.getMessage());
+            return "error";
         }
     }
 
-    public boolean allUserPasswordReset() {
-        try {
-            Connection connection = DriverManager.getConnection(DB_URL);
-            PreparedStatement statement = connection.prepareStatement("SELECT USERACCOUNT FROM USER");
-            PreparedStatement statement2 = connection.prepareStatement("UPDATE USER SET PASSWORD = DEFAULTPASSWORD WHERE USERACCOUNT = ?");
-            ResultSet resultSet = statement.executeQuery();
-            while(resultSet.next()) {
-                statement2.setString(1, resultSet.getString("USERACCOUNT"));
-                statement2.executeUpdate();
-            }
-            connection.close();
-            return true;
-        }catch(SQLException e) {
-            System.out.println("Failed to reset all users' password: " + e.getMessage());
-            return false;
-        }
-    }
+    
 
     public void updataID(){//更新id
         try {
@@ -944,5 +947,26 @@ public class DatabaseManager {
             System.out.println("Failed to show user's shop history: " + e.getMessage());
             return false;
         }
+    }
+
+    //返回随机产生的8位数
+    private String getRandomPassword(int len) {
+        String result= this.makeRandomPassword(len);
+        if (result.matches(".*[a-z]{1,}.*") && result.matches(".*[A-Z]{1,}.*") && result.matches(".*\\d{1,}.*") && result.matches(".*[~!@#$%^&*\\.?]{1,}.*")) {
+            return result;
+        }
+        result = makeRandomPassword(len);
+        return result;
+    }
+
+    //产生8位随机数
+    private String makeRandomPassword(int len){
+        char charr[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890~!@#$%^&*.?".toCharArray();
+        StringBuilder sb = new StringBuilder();
+        Random r = new Random();
+        for (int x = 0; x < len; ++x) {
+            sb.append(charr[r.nextInt(charr.length)]);
+        }
+        return sb.toString();
     }
 }

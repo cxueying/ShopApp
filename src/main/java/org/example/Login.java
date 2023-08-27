@@ -40,6 +40,7 @@ public class Login {
                 if(success) {
                     User.setUserAccount(account);
                     User.setUserState(true);
+                    databaseManager.passwordWrongTimesReset(account);
                 } else {
                     if(databaseManager.findUser(account)) databaseManager.wrongPassword(account);
                 }
