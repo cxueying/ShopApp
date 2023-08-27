@@ -21,7 +21,8 @@ public class DatabaseInitializer {
                                       "PHONENUMBER         INTERGER NOT NULL," +
                                       "EMAIL               TEXT     NOT NULL," + 
                                       "PASSWORD            TEXT     NOT NULL," +
-                                      "DEFAULTPASSWORD     TEXT     NOT NULL)" ;
+                                      "PASSWORDWRONGTIMES  INTERGER NOTNULL," +
+                                      "STATE               TEXT     NOT NULL)" ;
             statement.executeUpdate(createTableQuery);//创建USER表
 
             createTableQuery = "CREATE TABLE IF NOT EXISTS ADMIN" + 

@@ -40,6 +40,8 @@ public class Login {
                 if(success) {
                     User.setUserAccount(account);
                     User.setUserState(true);
+                } else {
+                    if(databaseManager.findUser(account)) databaseManager.wrongPassword(account);
                 }
             }else{
                 success = databaseManager.adminLogin(account, password);
@@ -53,6 +55,10 @@ public class Login {
                 return true;
             }else {
                 System.out.println("登录失败！！！");
+                if(databaseManager.passwordWrongTimes(account) >= 5) {
+                    System.out.println("输入密码错误过多，该账户已上锁，请重置密码");
+                    databaseManager.lockUser(account);
+                }
                 boolean continueFlag = true;
                 while(continueFlag){
                     System.out.println("请选择操作");

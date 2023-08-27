@@ -37,23 +37,34 @@ public class DatabaseManager {
         return "";
     }
 
-    public boolean userRegister(String username, String password) {
+    public boolean userRegister(String userAccount, String password, String phoneNumber, String email) {
         try {
             Connection connection = DriverManager.getConnection(DB_URL);
             
             PreparedStatement statement2 = connection.prepareStatement("SELECT * FROM USER WHERE USERACCOUNT = ?");
-            statement2.setString(1, username);
             ResultSet resultSet = statement2.executeQuery();
             if(resultSet.next()){
                 connection.close();
                 return false;
             }
 
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO USER (ID, USERACCOUNT, PASSWORD, DEFAULTPASSWORD) VALUES (?, ?, ?, ?)");
+            Date date = new Date();
+            TimeZone timeZone = TimeZone.getTimeZone("Asia/Shanghai");
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            dateFormat.setTimeZone(timeZone);
+            String time = dateFormat.format(date);
+
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO USER (ID, USERACCOUNT, LEVEL, REGISTERTIME, TOTALCOST, PHONENUMBER, EMAIL, PASSWORD, STATE, PASSWORDWRONGTIMES) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             statement.setInt(1, userID++);
-            statement.setString(2, username);
-            statement.setString(3, md5(password));
-            statement.setString(4,md5(username));
+            statement.setString(2, userAccount);
+            statement.setString(3, "铜牌");
+            statement.setString(4,time);
+            statement.setDouble(5, 0.0);
+            statement.setString(6, phoneNumber);
+            statement.setString(7, email);
+            statement.setString(8, md5(password));
+            statement.setString(9, "正常");
+            statement.setInt(10, 0);
             statement.executeUpdate();
             connection.close();
             return true;
@@ -61,6 +72,55 @@ public class DatabaseManager {
             System.out.println("Failed to register user: " + e.getMessage());
         }
         return false;
+    }
+
+    public boolean wrongPassword(String userAccount) {
+        try {
+            Connection connection = DriverManager.getConnection(DB_URL);
+            PreparedStatement statement = connection.prepareStatement("UPDATE USER SET PASSWORDWRONGTIME = ((SELECT PASSWORDWRONGTIME FROM USER WHERE USERACCOUNT = ?) + 1) WHERE USERACCOUNT = ?");
+            statement.setString(1, userAccount);
+            statement.setString(2,userAccount);
+            int updateResult = statement.executeUpdate();
+            connection.close();
+            if(updateResult != 0) return true;
+            else return false;
+        } catch (Exception e) {
+            System.out.println("Failed to add password wrong times: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public int passwordWrongTimes(String userAccount) {
+        try {
+            Connection connection = DriverManager.getConnection(DB_URL);
+            PreparedStatement statement = connection.prepareStatement("SELECT PASSWORDWRONGTIMES FROM USER WHERE USERACCOUNT = ?");
+            statement.setString(1, userAccount);
+            ResultSet resultSet = statement.executeQuery();
+            if(resultSet.next()) {
+                connection.close();
+                return resultSet.getInt("PASSWORDWRONGTIMES");
+            }else {
+                connection.close();
+                return -1;
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to inquire password wrong times:" + e.getMessage());
+            return -2;
+        }
+    }
+
+    public boolean lockUser(String userAccount) {
+        try {
+            Connection connection = DriverManager.getConnection(DB_URL);
+            PreparedStatement statement = connection.prepareStatement("UPDATE USER SET STATE = ? WHERE USERACCOUNT = ?");
+            statement.setString(1, "上锁");
+            statement.setString(2, userAccount);
+            connection.close();
+            return true;
+        } catch (Exception e) {
+            System.out.println("Failed to lock user account: " + e.getMessage());
+            return false;
+        }
     }
 
     public boolean userLogin(String username, String password) {
@@ -71,7 +131,11 @@ public class DatabaseManager {
 
             statement.setString(1, username);
             ResultSet resultSet = statement.executeQuery();
-    
+            if(resultSet.getString("STATE").equals("上锁")) {
+                connection.close();
+                System.out.println("该账户已上锁，请重置密码");
+                return false;
+            }
             if (resultSet.next()) {
                 String storedPassword = resultSet.getString("PASSWORD");
                 connection.close();
