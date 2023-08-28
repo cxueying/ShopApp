@@ -98,6 +98,7 @@ public class AdminPasswordManager {
                         String result = databaseManager.userPasswordReset(username);
                         if(!result.equals("error") && !result.equals("fail")) {
                             System.out.println("用户密码重置成功");
+                            System.out.println("新的密码为：" + result);
                             System.out.print("键入Enter继续");
                             scanner.nextLine();
                             runFlag = false;
